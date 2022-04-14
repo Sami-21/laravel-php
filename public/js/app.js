@@ -2118,7 +2118,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _components_ProductsData_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/ProductsData.vue */ "./resources/js/components/ProductsData.vue");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _components_ProductsData_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/ProductsData.vue */ "./resources/js/components/ProductsData.vue");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_2__);
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 //
 //
 //
@@ -2166,16 +2176,44 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
-    ProductsData: _components_ProductsData_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
+    ProductsData: _components_ProductsData_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
+  },
+  mounted: function mounted() {
+    var _this = this;
+
+    return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              new Promise(function (reject, resolve) {
+                axios__WEBPACK_IMPORTED_MODULE_2___default().get("stores").then(function (res) {
+                  _this.stores = res.data.map(function (item) {
+                    return item.name;
+                  });
+                  resolve(res);
+                })["catch"](function (err) {
+                  reject(err);
+                });
+              });
+
+            case 1:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee);
+    }))();
   },
   data: function data() {
     return {
-      items: ["test1", "test2", "test3"],
+      stores: [],
       valid: true,
-      ProuctName: "",
-      PtoductNameRules: [function (v) {
+      Name: "",
+      NameRules: [function (v) {
         return !!v || "Product Name is required";
       }, function (v) {
         return v && v.length >= 3 || "Product Name must atleast 3 characters";
@@ -2191,12 +2229,46 @@ __webpack_require__.r(__webpack_exports__);
         return !!v || "Price is required";
       }, function (v) {
         return v > 0 || "Price must be valid";
-      }]
+      }],
+      ProductStore: ""
     };
   },
   methods: {
     submit: function submit() {
-      console.log("form submitted");
+      var _this2 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee2() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                new Promise(function (resolve, reject) {
+                  axios__WEBPACK_IMPORTED_MODULE_2___default().post("products", {
+                    name: _this2.Name,
+                    quantity: _this2.Quantity,
+                    price: _this2.Price,
+                    store: _this2.ProductStore
+                  }).then(function (res) {
+                    _this2.$bus.emit("refresh-products");
+
+                    _this2.Name = "";
+                    _this2.Quantity = "";
+                    _this2.Price = "";
+                    _this2.ProductStore = "";
+                    resolve(res);
+                  })["catch"](function (err) {
+                    console.log(err.response);
+                    reject(err);
+                  });
+                });
+
+              case 1:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }))();
     }
   }
 });
@@ -2338,6 +2410,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 //
 //
 //
@@ -2382,22 +2464,136 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  methods: {
+    getProducts: function getProducts() {
+      var _this = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                new Promise(function (resolve, reject) {
+                  axios__WEBPACK_IMPORTED_MODULE_1___default().get("products").then(function (res) {
+                    _this.products = res.data;
+                    resolve(res);
+                  })["catch"](function (err) {
+                    console.log(err.response);
+                    reject(err);
+                  });
+                });
+
+              case 1:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }))();
+    },
+    removeProduct: function removeProduct(id) {
+      var _this2 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee2() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                new Promise(function (resolve, reject) {
+                  axios__WEBPACK_IMPORTED_MODULE_1___default()["delete"]("product/".concat(id)).then(function (res) {
+                    _this2.$bus.emit("refresh-products");
+
+                    resolve(res);
+                  })["catch"](function (err) {
+                    console.log(err.response);
+                    reject(err);
+                  });
+                });
+
+              case 1:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }))();
+    },
+    updateProduct: function updateProduct() {
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee3() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                new Promise(function (resolve, reject) {
+                  axios__WEBPACK_IMPORTED_MODULE_1___default().put("products").then(function (res) {
+                    resolve(res);
+                  })["catch"](function (err) {
+                    console.log(err.response);
+                    reject(err);
+                  });
+                });
+
+              case 1:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }))();
+    }
+  },
+  mounted: function mounted() {
+    this.getProducts();
+    this.$bus.on("refresh-products", this.getProducts);
+  },
   data: function data() {
     return {
-      valid: false,
-      id: "",
-      StoreName: "",
-      StoreAddress: "",
-      StoreNameRules: [function (v) {
-        return !!v || "Store Name is required";
+      products: null,
+      select: "",
+      valid: true,
+      ProuctName: "",
+      ProductNameRules: [function (v) {
+        return !!v || "Product Name is required";
       }, function (v) {
-        return v.length >= 3 || "Store Name must be atleast 3 characters";
+        return v && v.length >= 3 || "Product Name must atleast 3 characters";
       }],
-      StoreAddressRules: [function (v) {
-        return !!v || "Store Name is required";
+      Quantity: "",
+      QuantityRules: [function (v) {
+        return !!v || "Quantity is required";
       }, function (v) {
-        return v.length >= 3 || "Store Name must be atleast 3 characters";
+        return v > 0 || "Quantity must be valid";
+      }],
+      Price: "",
+      PriceRules: [function (v) {
+        return !!v || "Price is required";
+      }, function (v) {
+        return v > 0 || "Price must be valid";
       }]
     };
   }
@@ -5116,16 +5312,16 @@ var render = function () {
         [
           _c("v-text-field", {
             attrs: {
-              rules: _vm.PtoductNameRules,
+              rules: _vm.NameRules,
               label: "Product Name",
               required: "",
             },
             model: {
-              value: _vm.ProuctName,
+              value: _vm.Name,
               callback: function ($$v) {
-                _vm.ProuctName = $$v
+                _vm.Name = $$v
               },
-              expression: "ProuctName",
+              expression: "Name",
             },
           }),
           _vm._v(" "),
@@ -5145,7 +5341,7 @@ var render = function () {
           }),
           _vm._v(" "),
           _c("v-text-field", {
-            attrs: { rules: _vm.emailRules, label: "Price", required: "" },
+            attrs: { rules: _vm.PriceRules, label: "Price", required: "" },
             model: {
               value: _vm.Price,
               callback: function ($$v) {
@@ -5157,21 +5353,21 @@ var render = function () {
           _vm._v(" "),
           _c("v-select", {
             attrs: {
-              items: _vm.items,
+              items: this.stores,
               rules: [
                 function (v) {
-                  return !!v || "Item is required"
+                  return !!v || "store is required"
                 },
               ],
-              label: "Item",
+              label: "store",
               required: "",
             },
             model: {
-              value: _vm.select,
+              value: _vm.ProductStore,
               callback: function ($$v) {
-                _vm.select = $$v
+                _vm.ProductStore = $$v
               },
-              expression: "select",
+              expression: "ProductStore",
             },
           }),
           _vm._v(" "),
@@ -5340,110 +5536,149 @@ var render = function () {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c(
-    "v-form",
-    {
-      model: {
-        value: _vm.valid,
-        callback: function ($$v) {
-          _vm.valid = $$v
-        },
-        expression: "valid",
-      },
-    },
-    [
-      _c(
-        "v-container",
+    "v-container",
+    _vm._l(this.products, function (product) {
+      return _c(
+        "v-form",
+        { key: product.id },
         [
           _c(
-            "v-row",
+            "v-container",
             [
               _c(
-                "v-col",
-                { attrs: { cols: "12", md: "4" } },
-                [
-                  _c("v-text-field", {
-                    attrs: {
-                      rules: _vm.PtoductNameRules,
-                      label: "Product Name",
-                      required: "",
-                    },
-                    model: {
-                      value: _vm.ProuctName,
-                      callback: function ($$v) {
-                        _vm.ProuctName = $$v
-                      },
-                      expression: "ProuctName",
-                    },
-                  }),
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "v-col",
-                { attrs: { cols: "12", md: "4" } },
-                [
-                  _c("v-text-field", {
-                    attrs: {
-                      rules: _vm.QuantityRules,
-                      label: "Quantity",
-                      required: "",
-                    },
-                    model: {
-                      value: _vm.Quantity,
-                      callback: function ($$v) {
-                        _vm.Quantity = $$v
-                      },
-                      expression: "Quantity",
-                    },
-                  }),
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "v-col",
-                { attrs: { cols: "8", md: "3" } },
-                [
-                  _c("v-text-field", {
-                    attrs: {
-                      rules: _vm.emailRules,
-                      label: "Price",
-                      required: "",
-                    },
-                    model: {
-                      value: _vm.Price,
-                      callback: function ($$v) {
-                        _vm.Price = $$v
-                      },
-                      expression: "Price",
-                    },
-                  }),
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "v-col",
-                { attrs: { cols: "12", md: "4" } },
+                "v-row",
                 [
                   _c(
-                    "v-btn",
-                    {
-                      staticClass: "add-btn",
-                      attrs: { dark: "", color: "green", elevation: "2" },
-                    },
-                    [_c("v-icon", [_vm._v("mdi-pencil")])],
+                    "v-col",
+                    { attrs: { cols: "12", md: "4" } },
+                    [
+                      _c("v-text-field", {
+                        attrs: {
+                          rules: _vm.ProductNameRules,
+                          label: "Product Name",
+                          required: "",
+                        },
+                        model: {
+                          value: product.name,
+                          callback: function ($$v) {
+                            _vm.$set(product, "name", $$v)
+                          },
+                          expression: "product.name",
+                        },
+                      }),
+                    ],
                     1
                   ),
                   _vm._v(" "),
                   _c(
-                    "v-btn",
-                    {
-                      staticClass: "add-btn",
-                      attrs: { dark: "", color: "green", elevation: "2" },
-                    },
-                    [_c("v-icon", [_vm._v("mdi-delete")])],
+                    "v-col",
+                    { attrs: { cols: "12", md: "4" } },
+                    [
+                      _c("v-text-field", {
+                        attrs: {
+                          rules: _vm.QuantityRules,
+                          label: "Quantity",
+                          required: "",
+                        },
+                        model: {
+                          value: product.quantity,
+                          callback: function ($$v) {
+                            _vm.$set(product, "quantity", $$v)
+                          },
+                          expression: "product.quantity",
+                        },
+                      }),
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    { attrs: { cols: "6", md: "2" } },
+                    [
+                      _c("v-text-field", {
+                        attrs: {
+                          rules: _vm.PriceRules,
+                          label: "Price",
+                          required: "",
+                        },
+                        model: {
+                          value: product.price,
+                          callback: function ($$v) {
+                            _vm.$set(product, "price", $$v)
+                          },
+                          expression: "product.price",
+                        },
+                      }),
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    { attrs: { cols: "6", md: "2" } },
+                    [
+                      _c("v-select", {
+                        attrs: {
+                          items: ["items"],
+                          rules: [
+                            function (v) {
+                              return !!v || "Item is required"
+                            },
+                          ],
+                          label: "Item",
+                          required: "",
+                        },
+                        model: {
+                          value: product.store,
+                          callback: function ($$v) {
+                            _vm.$set(product, "store", $$v)
+                          },
+                          expression: "product.store",
+                        },
+                      }),
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    { attrs: { cols: "12", md: "4" } },
+                    [
+                      _c(
+                        "v-btn",
+                        {
+                          staticClass: "add-btn",
+                          attrs: { dark: "", color: "primary", elevation: "2" },
+                          on: {
+                            click: function ($event) {
+                              return _vm.updateProduct()
+                            },
+                          },
+                        },
+                        [_c("v-icon", [_vm._v("mdi-pencil")])],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-btn",
+                        {
+                          staticClass: "add-btn",
+                          attrs: {
+                            dark: "",
+                            color: "red darken-3",
+                            elevation: "2",
+                          },
+                          on: {
+                            click: function ($event) {
+                              return _vm.removeProduct(product.id)
+                            },
+                          },
+                        },
+                        [_c("v-icon", [_vm._v("mdi-delete")])],
+                        1
+                      ),
+                    ],
                     1
                   ),
                 ],
@@ -5454,8 +5689,8 @@ var render = function () {
           ),
         ],
         1
-      ),
-    ],
+      )
+    }),
     1
   )
 }

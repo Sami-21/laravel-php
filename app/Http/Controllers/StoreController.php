@@ -8,8 +8,8 @@ use App\Store;
 class StoreController extends Controller
 {
 
-    // post Request
-    public function post(StoreRequest $request ){
+    // Post Request
+    public function addStore(StoreRequest $request ){
         
         $validated = $request->validated();
 
@@ -17,12 +17,12 @@ class StoreController extends Controller
     }
 
     // Get Request
-    public function get(){
+    public function getStores(){
         return Store::all();
     }
 
     // Put Request
-    public function update(StoreRequest $request){
+    public function updateStore(StoreRequest $request){
         
         $validated = $request->validated();
 
@@ -30,7 +30,7 @@ class StoreController extends Controller
     }
 
     // Delete Request
-    public function delete($id){
+    public function removeStore($id){
         Store::where('id',$id)->delete();
     }
 }

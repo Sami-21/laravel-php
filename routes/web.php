@@ -8,10 +8,18 @@ Route::get('/', function () {
     return view('index');
 });
 
-Route::get('stores', "StoreController@get");
+Route::get('stores', "StoreController@getStores");
 
-Route::post('stores', "StoreController@post");
+Route::post('stores', "StoreController@addStore");
 
-Route::put('stores', "StoreController@update");
+Route::put('stores', "StoreController@updateStore");
 
-Route::delete('store/{id}', "StoreController@delete");
+Route::delete('store/{id}', "StoreController@removeStore");
+
+Route::get('products', "ProductController@getProducts");
+
+Route::post('products', "ProductController@addProduct");
+
+Route::put('products', "ProductController@updateProduct");
+
+Route::delete('product/{id}', "ProductController@removeProduct");

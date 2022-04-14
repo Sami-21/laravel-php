@@ -10,4 +10,9 @@ class Store extends Model
         'name',
         'address',
     ];
+    public function products()
+    {
+        return $this->HasMany(Product::class)->onDelete('cascade');
+    }
+
 }

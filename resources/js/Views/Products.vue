@@ -2,8 +2,8 @@
   <v-container>
     <v-form ref="form" v-model="valid" lazy-validation>
       <v-text-field
-        v-model="ProuctName"
-        :rules="PtoductNameRules"
+        v-model="Name"
+        :rules="NameRules"
         label="Product Name"
         required
       ></v-text-field>
@@ -16,16 +16,16 @@
       ></v-text-field>
       <v-text-field
         v-model="Price"
-        :rules="emailRules"
+        :rules="PriceRules"
         label="Price"
         required
       ></v-text-field>
 
       <v-select
-        v-model="select"
-        :items="items"
-        :rules="[(v) => !!v || 'Item is required']"
-        label="Item"
+        v-model="ProductStore"
+        :items="this.stores"
+        :rules="[(v) => !!v || 'store is required']"
+        label="store"
         required
       ></v-select>
 
@@ -46,14 +46,28 @@
 
 <script>
 import ProductsData from "../components/ProductsData.vue";
+import axios from "axios";
 
 export default {
   components: { ProductsData },
+  async mounted() {
+    new Promise((reject, resolve) => {
+      axios
+        .get("stores")
+        .then((res) => {
+          this.stores = res.data.map((item) => item.name);
+          resolve(res);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  },
   data: () => ({
-    items: ["test1", "test2", "test3"],
+    stores: [],
     valid: true,
-    ProuctName: "",
-    PtoductNameRules: [
+    Name: "",
+    NameRules: [
       (v) => !!v || "Product Name is required",
       (v) => (v && v.length >= 3) || "Product Name must atleast 3 characters",
     ],
@@ -67,11 +81,32 @@ export default {
       (v) => !!v || "Price is required",
       (v) => v > 0 || "Price must be valid",
     ],
+    ProductStore: "",
   }),
 
   methods: {
-    submit() {
-      console.log("form submitted");
+    async submit() {
+      new Promise((resolve, reject) => {
+        axios
+          .post("products", {
+            name: this.Name,
+            quantity: this.Quantity,
+            price: this.Price,
+            store: this.ProductStore,
+          })
+          .then((res) => {
+            this.$bus.emit("refresh-products");
+            this.Name = "";
+            this.Quantity = "";
+            this.Price = "";
+            this.ProductStore = "";
+            resolve(res);
+          })
+          .catch((err) => {
+            console.log(err.response);
+            reject(err);
+          });
+      });
     },
   },
 };
