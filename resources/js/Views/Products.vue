@@ -39,7 +39,7 @@
         add products
       </v-btn>
     </v-form>
-    <Products-Data></Products-Data>
+    <Products-Data v-bind:availableStores='stores'></Products-Data>
   </v-container>
 </template>
 

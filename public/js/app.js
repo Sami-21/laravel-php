@@ -2490,6 +2490,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  props: {
+    availableStores: {
+      type: Array
+    }
+  },
   methods: {
     getProducts: function getProducts() {
       var _this = this;
@@ -2506,6 +2511,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   })["catch"](function (err) {
                     console.log(err.response);
                     reject(err);
+                    s;
                   });
                 });
 
@@ -2544,14 +2550,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee2);
       }))();
     },
-    updateProduct: function updateProduct() {
+    updateProduct: function updateProduct(product) {
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee3() {
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 new Promise(function (resolve, reject) {
-                  axios__WEBPACK_IMPORTED_MODULE_1___default().put("products").then(function (res) {
+                  axios__WEBPACK_IMPORTED_MODULE_1___default().put("products", product).then(function (res) {
                     resolve(res);
                   })["catch"](function (err) {
                     console.log(err.response);
@@ -2575,7 +2581,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   data: function data() {
     return {
       products: null,
-      select: "",
       valid: true,
       ProuctName: "",
       ProductNameRules: [function (v) {
@@ -5384,7 +5389,7 @@ var render = function () {
         1
       ),
       _vm._v(" "),
-      _c("Products-Data"),
+      _c("Products-Data", { attrs: { availableStores: _vm.stores } }),
     ],
     1
   )
@@ -5620,7 +5625,7 @@ var render = function () {
                     [
                       _c("v-select", {
                         attrs: {
-                          items: ["items"],
+                          items: _vm.availableStores,
                           rules: [
                             function (v) {
                               return !!v || "Item is required"
@@ -5652,7 +5657,7 @@ var render = function () {
                           attrs: { dark: "", color: "primary", elevation: "2" },
                           on: {
                             click: function ($event) {
-                              return _vm.updateProduct()
+                              return _vm.updateProduct(product)
                             },
                           },
                         },

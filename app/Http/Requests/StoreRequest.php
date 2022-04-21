@@ -24,8 +24,8 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
-            'address' => 'required',
+            'name' => 'regex:/[a-zA-Z0-9\s]+/|required',
+            'address' => 'regex:/[a-zA-Z0-9\s]+/|required',
         ];
     }
 }

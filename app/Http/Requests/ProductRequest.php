@@ -24,9 +24,10 @@ class ProductRequest extends FormRequest
     public function rules()
     {
         return [
-            // 'name' => 'alpha_num_space|required',
-            // 'quantity' =>'numeric|required | gte:0',
-            // 'price' => 'numeric | gte:0.1|required'
+            'name' => 'regex:/[a-zA-Z0-9\s]+/|required',
+            'quantity' =>'numeric|required | gte:0',
+            'price' => 'numeric | gte:0.1|required',
+            'store' => 'regex:/[a-zA-Z0-9\s]+/ | required',
         ];
     }
 }

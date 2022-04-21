@@ -33,7 +33,7 @@
           <v-col cols="6" md="2">
             <v-select
               v-model="product.store"
-              :items="['items']"
+              :items="availableStores"
               :rules="[(v) => !!v || 'Item is required']"
               label="Item"
               required
@@ -42,7 +42,7 @@
 
           <v-col cols="12" md="4">
             <v-btn
-              @click="updateProduct()"
+              @click="updateProduct(product)"
               dark
               class="add-btn"
               color="primary"
@@ -70,6 +70,11 @@
 import axios from "axios";
 
 export default {
+  props: {
+    availableStores: {
+      type: Array,
+    },
+  },
   methods: {
     async getProducts() {
       new Promise((resolve, reject) => {
@@ -82,6 +87,7 @@ export default {
           .catch((err) => {
             console.log(err.response);
             reject(err);
+            s;
           });
       });
     },
@@ -99,10 +105,10 @@ export default {
           });
       });
     },
-    async updateProduct() {
+    async updateProduct(product) {
       new Promise((resolve, reject) => {
         axios
-          .put(`products`)
+          .put(`products`, product)
           .then((res) => {
             resolve(res);
           })
@@ -119,7 +125,6 @@ export default {
   },
   data: () => ({
     products: null,
-    select: "",
     valid: true,
     ProuctName: "",
     ProductNameRules: [

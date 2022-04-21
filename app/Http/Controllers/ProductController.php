@@ -11,20 +11,19 @@ class ProductController extends Controller
     function GetProducts(){
         return Product::all() ;
     }
+
     function addProduct(ProductRequest $request){
-        
+        //selecting the product's store  
         $store = Store::where('name',$request->store)->first() ;
-        
-        Product::create(["name" => $request->name,'quantity' => $request->quantity,'price' => $request->price,"store_id" => $store->id]);
-        
+        //Creating a product with the data from the request object + the id of the previously selected store
+        Product::create(["name" => $request->name,'quantity' => $request->quantity,'price' => $request->price,'store' => $request->store,"store_id" => $store->id]);
+
     }
     function removeProduct($id){
-
         Product::find($id)->delete();
     }
+    
     function updateProduct(ProductRequest $request){
-        $validated = $request->validated();
-
-        Store::where('id',$request->id )->update($validated);
+       Product::find($request->id)->update($request->all());
     }
 }

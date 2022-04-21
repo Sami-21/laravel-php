@@ -19,7 +19,8 @@ class CreateProductsTable extends Migration
             $table->string('name');
             $table->integer('quantity');
             $table->float('price');
-            $table->integer('store_id');
+            $table->string('store');
+            $table->foreignId('store_id')->references('id')->on('stores')->onDelete('cascade');
             $table->timestamps();
         });
     

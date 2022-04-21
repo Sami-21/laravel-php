@@ -12,7 +12,7 @@ class Store extends Model
     ];
     public function products()
     {
-        return $this->HasMany(Product::class)->onDelete('cascade');
+        return $this->HasMany(Product::class )->onDelete('cascade');
     }
 
 }
