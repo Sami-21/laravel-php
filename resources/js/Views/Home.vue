@@ -1,17 +1,24 @@
 <template>
   <div class="home">
-    <h1>Home View</h1>
+    <NavBar></NavBar>
   </div>
 </template>
 <script>
+import NavBar from "../components/NavBar.vue";
+
+export default {
+  components: { NavBar },
+};
 </script>
 
 <style>
 .home {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
+  background-color: black;
 }
 </style>

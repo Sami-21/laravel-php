@@ -1,13 +1,13 @@
 <template>
   <v-app>
-    <div class="navbar">
+    <!-- <div class="navbar">
       <router-link to="/stores">
         <v-btn color="primary" elevation="3" small>Add Stores</v-btn>
       </router-link>
       <router-link to="/products">
         <v-btn color="primary" elevation="3" small>Add products</v-btn>
       </router-link>
-    </div>
+    </div> -->
     <router-view />
   </v-app>
 </template>
