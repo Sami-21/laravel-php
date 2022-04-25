@@ -15,13 +15,8 @@
 export default {};
 </script>
 <style>
-.navbar {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  width: 100vw;
-  height: 100px;
-  padding-right: 25px;
-  padding-left: 25px;
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
+body {
+  font-family: Bebas Neue, sans-serif;
 }
 </style>
