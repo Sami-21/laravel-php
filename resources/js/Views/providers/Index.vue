@@ -1,8 +1,9 @@
 <template>
-  <div class="">
-    <h1>Home</h1>
+  <div class="text-5xl">
+    <h1>Providers</h1>
   </div>
 </template>
+
 <script>
 export default {};
 </script>

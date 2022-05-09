@@ -23,3 +23,13 @@ Route::post('products', "ProductController@addProduct");
 Route::put('products', "ProductController@updateProduct");
 
 Route::delete('product/{id}', "ProductController@removeProduct");
+
+//Client Route
+
+Route::get('clients', "ClientController@GetClients");
+
+Route::post('clients', "ClientController@addClient");
+
+Route::put('clients/{id}', "ClientController@UpdateClient");
+
+Route::delete('clients/{id}', "ClientController@DeleteClient");

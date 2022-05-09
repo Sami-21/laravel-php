@@ -1,22 +1,67 @@
 <template>
   <v-app>
-    <!-- <div class="navbar">
-      <router-link to="/stores">
-        <v-btn color="primary" elevation="3" small>Add Stores</v-btn>
-      </router-link>
-      <router-link to="/products">
-        <v-btn color="primary" elevation="3" small>Add products</v-btn>
-      </router-link>
-    </div> -->
-    <router-view />
+    <v-card>
+      <v-navigation-drawer
+        v-model="drawer"
+        :mini-variant.sync="mini"
+        permanent
+        fixed
+      >
+        <v-list-item class="px-2">
+          <v-list-item-avatar>
+            <v-img src="https://randomuser.me/api/portraits/men/85.jpg"></v-img>
+          </v-list-item-avatar>
+
+          <v-list-item-title>John Leider</v-list-item-title>
+
+          <v-btn icon @click.stop="mini = !mini">
+            <v-icon>mdi-chevron-left</v-icon>
+          </v-btn>
+        </v-list-item>
+
+        <v-divider></v-divider>
+
+        <v-list dense>
+          <v-list-item v-for="item in items" :key="item.title" link>
+            <v-list-item-icon>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title
+                ><router-link :to="item.path"> {{ item.title }} </router-link>
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-navigation-drawer>
+    </v-card>
+    <div class="w-full h-full ml-16 my-12"><router-view /></div>
   </v-app>
 </template>
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      drawer: true,
+      items: [
+        { title: "Clients", icon: "mdi-account-group", path: "/clients" },
+        { title: "Providers", icon: "mdi-account-wrench", path: "/providers" },
+        {
+          title: "Products",
+          icon: "mdi-package-variant-closed",
+          path: "/products",
+        },
+        {
+          title: "Transactions",
+          icon: "mdi-cash-multiple",
+          path: "/transactions",
+        },
+      ],
+      mini: true,
+    };
+  },
+};
 </script>
 <style>
-@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
-body {
-  font-family: Bebas Neue, sans-serif;
-}
 </style>

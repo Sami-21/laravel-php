@@ -10,8 +10,8 @@ class Product extends Model
         'name',
         'quantity',
         'price',
-        "store",
-        "store_id",
+        'store',
+        'store_id',
     ];
     public function store() {
         return $this->BelongsTo(Store::class);
