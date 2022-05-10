@@ -1,9 +1,7 @@
 <template>
-  <v-dialog v-model="dialog" max-width="500px">
+  <v-dialog v-model="dialogOption" max-width="500px">
     <template v-slot:activator="{ on, attrs }">
-      <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
-        New Item
-      </v-btn>
+      <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">New Item</v-btn>
     </template>
     <v-form @submit.prevent="save" id="AddClientForm">
       <v-card>
@@ -15,17 +13,12 @@
           <v-container>
             <v-row>
               <v-col cols="12" sm="6" md="4">
-                <v-text-field
-                  v-model="selectedItem.name"
-                  name="name"
-                  label="name"
-                  required
-                ></v-text-field>
+                <v-text-field v-model="AddedItem.name" name="name" label="name" required></v-text-field>
                 <span>{{ errors.first("name") }}</span>
               </v-col>
               <v-col cols="12" sm="6" md="4">
                 <v-text-field
-                  v-model="selectedItem.email"
+                  v-model="AddedItem.email"
                   v-validate="'email'"
                   name="email"
                   label="email"
@@ -33,7 +26,7 @@
               </v-col>
               <v-col cols="12" sm="6" md="4">
                 <v-text-field
-                  v-model="selectedItem.phone"
+                  v-model="AddedItem.phone"
                   v-validate="'numeric'"
                   name="phone"
                   label="phone"
@@ -42,7 +35,7 @@
               </v-col>
               <v-col cols="12" sm="6" md="4">
                 <v-text-field
-                  v-model="selectedItem.address"
+                  v-model="AddedItem.address"
                   v-validate="'alpha'"
                   name="address"
                   label="address"
@@ -55,24 +48,50 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
-          <v-btn type="submit" color="blue darken-1" text form="AddClientForm">
-            Save
-          </v-btn>
+          <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
+          <v-btn type="submit" color="blue darken-1" text form="AddClientForm">Save</v-btn>
         </v-card-actions>
       </v-card>
     </v-form>
   </v-dialog>
 </template>
 <script>
+import axios from "axios";
+
 export default {
-    props:{
-        dialog:Boolean,
-        save:{type :Function}
+  props: {
+    dialog: { type: Boolean },
+    close: { type: Function }
+  },
+  data: () => ({
+    dialogOption:false,
+    AddedItem: {
+      name: "",
+      email: "",
+      phone: "",
+      address: ""
     }
-}
+  }),
+  methods: {
+    async save() {
+      new Promise((resolve, reject) => {
+        axios
+          .post("clients", this.AddedItem)
+          .then(res => {
+            this.close();
+            this.$bus.emit("refresh", this.AddedItem);
+            resolve(res);
+          })
+          .catch(err => {
+            console.log(this.AddedItem);
+            console.log(err);
+            reject(err);
+          });
+      });
+    }
+  }
+};
 </script>
 
 <style>
-
 </style>
