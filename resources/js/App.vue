@@ -1,12 +1,7 @@
 <template>
   <v-app>
     <v-card>
-      <v-navigation-drawer
-        v-model="drawer"
-        :mini-variant.sync="mini"
-        permanent
-        fixed
-      >
+      <v-navigation-drawer v-model="drawer" :mini-variant.sync="mini" permanent fixed>
         <v-list-item class="px-2">
           <v-list-item-avatar>
             <v-img src="https://randomuser.me/api/portraits/men/85.jpg"></v-img>
@@ -22,21 +17,21 @@
         <v-divider></v-divider>
 
         <v-list dense>
-          <v-list-item v-for="item in items" :key="item.title" link>
+          <v-list-item v-for="item in items" :key="item.title" link :to="item.path">
             <v-list-item-icon>
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-icon>
 
             <v-list-item-content>
-              <v-list-item-title
-                ><router-link :to="item.path"> {{ item.title }} </router-link>
-              </v-list-item-title>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list>
       </v-navigation-drawer>
     </v-card>
-    <div class="w-full h-full ml-16 my-12"><router-view /></div>
+    <div class="w-full h-full ml-16 my-12">
+      <router-view />
+    </div>
   </v-app>
 </template>
 <script>
@@ -50,17 +45,17 @@ export default {
         {
           title: "Products",
           icon: "mdi-package-variant-closed",
-          path: "/products",
+          path: "/products"
         },
         {
           title: "Transactions",
           icon: "mdi-cash-multiple",
-          path: "/transactions",
-        },
+          path: "/transactions"
+        }
       ],
-      mini: true,
+      mini: true
     };
-  },
+  }
 };
 </script>
 <style>

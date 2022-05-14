@@ -2,21 +2,19 @@
   <v-dialog v-model="dialogEdit" max-width="500px">
     <v-form @submit.prevent="confirmEdit" id="UpdateClientForm">
       <v-card>
-
         <v-card-title>
           <span class="text-h5">Edit Client</span>
         </v-card-title>
 
         <v-card-text>
           <v-container>
-
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  v-model="newClient.name"
+                  v-model="newProducts.name"
                   name="name"
                   label="name"
-                v-validate="'alpha_spaces|required'"
+                    v-validate="{required :true , regex:/^[A-Za-z0-9\d\-_\s]+$/i}"
                 ></v-text-field>
                 <span class="validation-error">{{ errors.first('name') }}</span>
               </v-col>
@@ -25,39 +23,38 @@
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  v-model="newClient.email"
-                  name="email"
-                  label="email"
-                  v-validate="'required|email'" 
+                  v-model="newProducts.price"
+                  name="price"
+                  label="price"
+                  v-validate="{ required: true, regex:/^(?!0*[.,]0*$|[.,]0*$|0*$)\d+[,.]?\d{0,2}$/}"
                 ></v-text-field>
-                <span class="validation-error">{{ errors.first('email') }}</span>
+                <span class="validation-error">{{ errors.first('price') }}</span>
               </v-col>
             </v-row>
 
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  v-model="newClient.phone"
-                  v-validate="{ required: true, regex:/^(00213|\+213|0)(5|6|7)[0-9]{8}$/ }"
-                  name="phone"
-                  label="phone"
+                  v-model="newProducts.quantity"
+                  v-validate="{ required: true, regex:/^([0-9]+)$/ }"
+                  name="quantity"
+                  label="quantity"
                 ></v-text-field>
-                <span class="validation-error">{{ errors.first('phone') }}</span>
+                <span class="validation-error">{{ errors.first('quantity') }}</span>
               </v-col>
             </v-row>
 
             <v-row>
               <v-col cols="12">
-                <v-text-field
-                  v-model="newClient.address"
+                <v-textarea
+                  v-model="newProducts.description"
                   v-validate="'required'"
-                  name="address"
-                  label="address"
-                ></v-text-field>
-                <span class="validation-error">{{ errors.first('address') }}</span>
+                  name="description"
+                  label="description"
+                ></v-textarea>
+                <span class="validation-error">{{ errors.first('description') }}</span>
               </v-col>
             </v-row>
-
           </v-container>
         </v-card-text>
 
@@ -66,7 +63,6 @@
           <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
           <v-btn type="submit" color="green darken-1" text form="UpdateClientForm">Save</v-btn>
         </v-card-actions>
-
       </v-card>
     </v-form>
   </v-dialog>
@@ -75,55 +71,52 @@
 import axios from "axios";
 
 export default {
-
   props: {
     dialogEdit: Boolean,
     current: Object,
     close: { type: Function }
   },
 
-  data(){
+  data() {
     return {
-       newClient:{},
-    }
+      newProducts: {}
+    };
   },
 
-  mounted(){
-      this.setNewClient();
+  mounted() {
+    this.setNewProduct();
   },
 
   methods: {
-
-    setNewClient(){
-      this.newClient = Object.assign({}, this.newClient, this.current)
+    setNewProduct() {
+      this.newProducts = Object.assign({}, this.newProducts, this.current);
     },
 
     async confirmEdit() {
-        this.$validator.validateAll().then(result => {
-        if(result){
+      this.$validator.validateAll().then(result => {
+        if (result) {
           new Promise((resolve, reject) => {
-        axios
-          .put(`clients/${this.current.id}`, this.newClient)
-          .then(res => {
-            this.$bus.emit("edit", this.client);
-            this.close();
-            resolve(res);
-          })
-          .catch(err => {
-            console.log(err);
-            this.close();
-            reject(err);
+            axios
+              .put(`products/${this.current.id}`, this.newProducts)
+              .then(res => {
+                this.$bus.emit("edit", this.client);
+                this.close();
+                resolve(res);
+              })
+              .catch(err => {
+                console.log(err);
+                this.close();
+                reject(err);
+              });
           });
-      });
         }
-      })
-    },
-
+      });
+    }
   }
 };
 </script>
 <style scoped>
-.validation-error{
-  color:#f00;
+.validation-error {
+  color: #f00;
 }
 </style>

@@ -5,10 +5,10 @@
         <v-icon large>mdi-plus</v-icon>
       </v-btn>
     </template>
-    <v-form @submit.prevent="save" id="AddClientForm">
+    <v-form @submit.prevent="save" id="AddProductForm">
       <v-card>
         <v-card-title>
-          <span class="text-h5">New Client</span>
+          <span class="text-h5">New Product</span>
         </v-card-title>
 
         <v-card-text>
@@ -16,10 +16,10 @@
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  v-model="AddedItem.name"
+                  v-model="addedProduct.name"
                   name="name"
                   label="name"
-                  v-validate="'alpha_spaces|required'"
+                  v-validate="{required :true , regex:/^[A-Za-z0-9\d\-_\s]+$/i}"
                 ></v-text-field>
                 <span class="validation-error">{{ errors.first('name') }}</span>
               </v-col>
@@ -27,34 +27,35 @@
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  v-model="AddedItem.email"
-                  name="email"
-                  label="email"
-                  v-validate="'required|email'"
+                  v-model="addedProduct.price"
+                  name="price"
+                  type="number"
+                  label="price"
+                  v-validate="{ required: true, regex:/^(?!0*[.,]0*$|[.,]0*$|0*$)\d+[,.]?\d{0,2}$/}"
                 ></v-text-field>
-                <span class="validation-error">{{ errors.first('email') }}</span>
+                <span class="validation-error">{{ errors.first('price') }}</span>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  v-model="AddedItem.phone"
-                  v-validate="{ required: true, regex:/^(00213|\+213|0)(5|6|7)[0-9]{8}$/ }"
-                  name="phone"
-                  label="phone"
+                  v-model="addedProduct.quantity"
+                  v-validate="{ required: true, regex:/^([0-9]+)$/ }"
+                  name="quantity"
+                  label="quantity"
                 ></v-text-field>
-                <span class="validation-error">{{ errors.first('phone') }}</span>
+                <span class="validation-error">{{ errors.first('quantity') }}</span>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12">
-                <v-text-field
-                  v-model="AddedItem.address"
+                <v-textarea
+                  v-model="addedProduct.description"
                   v-validate="'required'"
-                  name="address"
-                  label="address"
-                ></v-text-field>
-                <span class="validation-error">{{ errors.first('address') }}</span>
+                  name="description"
+                  label="description"
+                ></v-textarea>
+                <span class="validation-error">{{ errors.first('description') }}</span>
               </v-col>
             </v-row>
           </v-container>
@@ -63,7 +64,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-          <v-btn type="submit" color="green darken-1" text form="AddClientForm">Save</v-btn>
+          <v-btn type="submit" color="green darken-1" text form="AddProductForm">Save</v-btn>
         </v-card-actions>
       </v-card>
     </v-form>
@@ -76,11 +77,11 @@ export default {
   data: () => ({
     dialogAdd: false,
 
-    AddedItem: {
+    addedProduct: {
       name: "",
-      email: "",
-      phone: "",
-      address: ""
+      price: "",
+      quantity: "",
+      description: ""
     }
   }),
 
@@ -90,14 +91,14 @@ export default {
         if (result) {
           new Promise((resolve, reject) => {
             axios
-              .post("clients", this.AddedItem)
+              .post("products", this.addedProduct)
               .then(res => {
                 this.close();
-                this.$bus.emit("add", this.AddedItem);
+                this.$bus.emit("add", this.addedProduct);
                 resolve(res);
               })
               .catch(err => {
-                console.log(err);
+                console.log(err.response);
                 reject(err);
               });
           });

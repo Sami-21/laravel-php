@@ -4,23 +4,29 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ClientRequest;
 use App\Client;
-use Illuminate\Http\Request;
 
 class ClientController extends Controller
 {
-    function GetClients(){
+    function getClients()
+    {
         return  Client::all();
     }
-    function AddClient(ClientRequest $request){
+
+    function addClient(ClientRequest $request)
+    {
         $validated = $request->validated();
 
         Client::create($validated);
     }
-    function UpdateClient(ClientRequest $request ,$id){
+
+    function updateClient(ClientRequest $request, $id)
+    {
         $validated = $request->validated();
         Client::find($id)->update($validated);
     }
-    function DeleteClient($id){
+
+    function deleteClient($id)
+    {
         Client::find($id)->delete();
     }
 }

@@ -1,12 +1,9 @@
 <template>
-  <div class="text-5xl">
-    <h1>Providers</h1>
-  </div>
+  <List />
 </template>
-
 <script>
-export default {};
+import List from "./list/List.vue";
+export default {
+  components: { List }
+};
 </script>
-
-<style>
-</style>

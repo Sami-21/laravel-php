@@ -1,10 +1,10 @@
 <template>
-  <v-data-table :headers="headers" :items="clients" sort-by="name" class="elevation-1">
+  <v-data-table :headers="headers" :items="providers" sort-by="name" class="elevation-1">
     <template v-slot:top>
       <v-toolbar flat>
-        <v-toolbar-title>Clients</v-toolbar-title>
+        <v-toolbar-title>Providers</v-toolbar-title>
         <v-divider class="mx-4" inset vertical></v-divider>
-        <v-autocomplete clearable :items="clients.map(item => { return item.name})"></v-autocomplete>
+        <v-autocomplete clearable :items="providers.map(item => { return item.name})"></v-autocomplete>
         <v-spacer></v-spacer>
 
         <Add />
@@ -97,8 +97,7 @@ export default {
       { text: "Actions", value: "actions", sortable: false }
     ],
 
-    clients: [],
-
+    providers: [],
     editedIndex: -1,
     currentItem: {},
     defaultItem: {
@@ -111,25 +110,25 @@ export default {
 
   mounted() {
     this.$bus.on("add", () => {
-      (this.AddSuccess = true), this.getClients();
+      (this.AddSuccess = true), this.getProviders();
     });
 
     this.$bus.on("edit", () => {
-      (this.EditSuccess = true), this.getClients();
+      (this.EditSuccess = true), this.getProviders();
     });
   },
 
   created() {
-    this.getClients();
+    this.getProviders();
   },
 
   methods: {
-    async getClients() {
+    async getProviders() {
       new Promise((resolve, reject) => {
         axios
-          .get("clients")
+          .get("providers")
           .then(res => {
-            this.clients = res.data;
+            this.providers = res.data;
             resolve(res);
           })
           .catch(err => {
@@ -140,19 +139,19 @@ export default {
     },
 
     editItem(item) {
-      this.editedIndex = this.clients.indexOf(item);
+      this.editedIndex = this.providers.indexOf(item);
       this.currentItem = Object.assign({}, item);
       this.dialogEdit = true;
     },
 
     viewItem(item) {
-      this.editedIndex = this.clients.indexOf(item);
+      this.editedIndex = this.providers.indexOf(item);
       this.currentItem = Object.assign({}, item);
       this.dialogView = true;
     },
 
     deleteItem(item) {
-      this.editedIndex = this.clients.indexOf(item);
+      this.editedIndex = this.providers.indexOf(item);
       this.currentItem = Object.assign({}, item);
       this.dialogDelete = true;
     },
@@ -160,11 +159,11 @@ export default {
     async deleteItemConfirm() {
       new Promise((resolve, reject) => {
         axios
-          .delete(`clients/${this.clients[this.editedIndex].id}`)
+          .delete(`providers/${this.providers[this.editedIndex].id}`)
           .then(res => {
             this.DeleteSuccess = true;
             this.closeDeleteDialog();
-            this.getClients();
+            this.getProviders();
             resolve(res);
           })
           .catch(err => {

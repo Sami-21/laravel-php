@@ -5,10 +5,10 @@
         <v-icon large>mdi-plus</v-icon>
       </v-btn>
     </template>
-    <v-form @submit.prevent="save" id="AddClientForm">
+    <v-form @submit.prevent="save" id="AddProviderForm">
       <v-card>
         <v-card-title>
-          <span class="text-h5">New Client</span>
+          <span class="text-h5">New Provider</span>
         </v-card-title>
 
         <v-card-text>
@@ -63,7 +63,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-          <v-btn type="submit" color="green darken-1" text form="AddClientForm">Save</v-btn>
+          <v-btn type="submit" color="green darken-1" text form="AddProviderForm">Save</v-btn>
         </v-card-actions>
       </v-card>
     </v-form>
@@ -75,7 +75,6 @@ import axios from "axios";
 export default {
   data: () => ({
     dialogAdd: false,
-
     AddedItem: {
       name: "",
       email: "",
@@ -90,7 +89,7 @@ export default {
         if (result) {
           new Promise((resolve, reject) => {
             axios
-              .post("clients", this.AddedItem)
+              .post("providers", this.AddedItem)
               .then(res => {
                 this.close();
                 this.$bus.emit("add", this.AddedItem);
