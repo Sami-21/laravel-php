@@ -94,6 +94,7 @@ export default {
               .then(res => {
                 this.close();
                 this.$bus.emit("add", this.AddedItem);
+                this.AddedItem={};
                 resolve(res);
               })
               .catch(err => {

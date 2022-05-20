@@ -51,7 +51,6 @@
               <v-col cols="12">
                 <v-textarea
                   v-model="addedProduct.description"
-                  v-validate="'required'"
                   name="description"
                   label="description"
                 ></v-textarea>
@@ -76,7 +75,7 @@ import axios from "axios";
 export default {
   data: () => ({
     dialogAdd: false,
-
+    
     addedProduct: {
       name: "",
       price: "",
@@ -94,6 +93,7 @@ export default {
               .post("products", this.addedProduct)
               .then(res => {
                 this.close();
+                this.addedProduct={};
                 this.$bus.emit("add", this.addedProduct);
                 resolve(res);
               })

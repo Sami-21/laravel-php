@@ -38,3 +38,13 @@ Route::post('products', "ProductController@addProduct");
 Route::put('products/{id}', "ProductController@updateProduct");
 
 Route::delete('products/{id}', "ProductController@deleteProduct");
+
+// Transactions Routes
+
+Route::get('transactions', "TransactionController@getTransactions");
+
+// Route::post('transactions', "TransactionController@addTransactions");
+
+// Route::put('transactions/{id}', "TransactionController@updateTransaction");
+
+// Route::delete('transactions/{id}', "TransactionController@deleteTransaction");

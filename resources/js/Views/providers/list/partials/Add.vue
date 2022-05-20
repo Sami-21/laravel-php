@@ -92,6 +92,7 @@ export default {
               .post("providers", this.AddedItem)
               .then(res => {
                 this.close();
+                this.AddedItem={};
                 this.$bus.emit("add", this.AddedItem);
                 resolve(res);
               })

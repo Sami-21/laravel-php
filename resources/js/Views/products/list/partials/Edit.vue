@@ -48,7 +48,6 @@
               <v-col cols="12">
                 <v-textarea
                   v-model="newProducts.description"
-                  v-validate="'required'"
                   name="description"
                   label="description"
                 ></v-textarea>

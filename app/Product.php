@@ -12,4 +12,8 @@ class Product extends Model
         "quantity",
         "description",
     ];
+    public function transactions()
+    {
+        return $this->belongsToMany('App\Transaction');
+    }
 }
