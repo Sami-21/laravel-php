@@ -15,7 +15,7 @@
             <v-row>
               <v-col cols="12">
                 <v-select
-                  v-model="addedItem.client.name"
+                  v-model="addedTransaction.client.name"
                   :items="
                     clients.map((client) => {
                       return client.name;
@@ -28,7 +28,7 @@
             <v-row>
               <v-col cols="12">
                 <v-select
-                  v-model="addedItem.provider.name"
+                  v-model="addedTransaction.provider.name"
                   :items="
                     providers.map((provider) => {
                       return provider.name;
@@ -40,28 +40,44 @@
             </v-row>
             <v-row
               class="addProduct"
-              v-for="product in addedProducts"
-              :key="product.key"
+              v-for="product in selectedProducts"
+              :key="product.id"
             >
-              <v-col cols="4">
+              <v-col v-if="product.name != ''" cols="4">
                 <v-select
                   v-model="product.name"
-                  :items="availableProducts"
+                  :items="availableProductsNames.push()"
                   label="Product"
+                  clearable
+                  hide-selected
                 ></v-select>
               </v-col>
-              <v-col cols="3">
+              <v-col v-else cols="10">
+                <v-select
+                  v-model="product.name"
+                  :items="availableProductsNames.push(this.products[gettingIndex(product)])"
+                  label="Product"
+                  hide-selected
+                  @change="setProduct(product)"
+                ></v-select>
+              </v-col>
+              <v-col v-if="product.name != ''" cols="3">
                 <v-text-field
                   v-model="product.quantity"
                   label="quantity"
                   :min="0"
-                  :max="10"
+                  :max="product.maxQuantity"
                   type="number"
                 >
                 </v-text-field>
               </v-col>
-              <v-col cols="3">
-                <v-text-field label="total" type="text" readonly :value="100">
+              <v-col v-if="product.name != ''" cols="3">
+                <v-text-field
+                  label="total"
+                  type="text"
+                  readonly
+                  :value="(product.quantity * product.price).toFixed(2)"
+                >
                 </v-text-field>
               </v-col>
               <v-col cols="2">
@@ -72,7 +88,7 @@
                 </v-btn>
               </v-col>
             </v-row>
-            <v-row v-if="this.products.length != this.addedProducts.length">
+            <v-row v-if="this.products.length != this.selectedProducts.length">
               <v-col cols="12">
                 <v-btn color="green" dark @click="addProduct()">
                   <v-icon>mdi-plus</v-icon>
@@ -109,20 +125,13 @@ export default {
     clients: [],
     providers: [],
     products: [],
-    addedItem: {
+    addedTransaction: {
       client: {},
       provider: {},
     },
-    key: 0,
-    addedProducts: [],
-    availableProducts: [],
-    emptyProduct: {
-      key: 0,
-      name: "",
-      price: 0,
-      quantity: 0,
-    },
+    selectedProducts: [],
   }),
+
   async mounted() {
     // Getting All Clients
     new Promise((resolve, reject) => {
@@ -158,9 +167,6 @@ export default {
         .get("products")
         .then((res) => {
           this.products = res.data;
-          this.availableProducts = res.data.map((product) => {
-            return product.name;
-          });
           console.log(this.products);
           resolve(res);
         })
@@ -170,51 +176,59 @@ export default {
         });
     });
   },
-  // computed:{
-  //   availableProducts(){
 
-  //   },
-  // },
-  methods: {
-    async save() {
-      console.log(this.addedItem);
-      // this.$validator.validateAll().then(result => {
-      //   if (result) {
-      //     new Promise((resolve, reject) => {
-      //       axios
-      //         .post("transactions", this.addedItem)
-      //         .then(res => {
-      //           this.close();
-      //           this.addedItem={};
-      //           this.$bus.emit("add", this.addedItem);
-      //           resolve(res);
-      //         })
-      //         .catch(err => {
-      //           console.log(err);
-      //           reject(err);
-      //         });
-      //     });
-      //   }
-      // });
+  computed: {
+    availableProductsNames() {
+      return this.products.map((product) => {
+        if (
+          this.selectedProducts
+            .map((el) => {
+              return el.name;
+            })
+            .includes(product.name) === false
+        ) {
+          return product.name;
+        }
+      });
     },
-    setProduct(product) {},
+  },
+
+  methods: {
+    gettingIndex(product) {
+      return this.products.indexOf(product);
+    },
+
+    setProduct(product) {
+      let itemIndex = this.selectedProducts.indexOf(product);
+      this.selectedProducts[itemIndex].name = product.name;
+      this.selectedProducts[itemIndex].maxQuantity = this.products.find(
+        (item) => {
+          return item.name === product.name;
+        }
+      ).quantity;
+      this.selectedProducts[itemIndex].price = this.products.find((item) => {
+        return item.name == product.name;
+      }).price;
+      console.log(this.selectedProducts);
+    },
+
     close() {
       this.dialogAdd = false;
     },
+
     addProduct() {
-      this.addedProducts.push({
-        key: this.key,
+      this.selectedProducts.push({
         name: "",
         price: 0,
         quantity: 0,
+        maxQuantity: 0,
       });
-      this.key++;
-      console.log(this.addedProducts);
     },
-    removeProduct(item) {
-      let itemIndex = this.addedProducts.indexOf(item);
-      console.log(itemIndex);
-      this.addedProducts.splice(itemIndex, 1);
+
+    removeProduct(item) {},
+
+    async save() {
+      console.log(this.addedTransaction);
     },
   },
 };
