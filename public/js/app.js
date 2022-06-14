@@ -4498,6 +4498,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
@@ -4507,10 +4510,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       providers: [],
       products: [],
       addedTransaction: {
-        client: {},
-        provider: {}
+        client_id: {},
+        provider_id: {},
+        total: 0,
+        products: []
       },
-      selectedProducts: []
+      selectedProducts: [{
+        product_id: 0,
+        name: name,
+        price: 0,
+        quantity: 0,
+        maxQuantity: 0
+      }]
     };
   },
   mounted: function mounted() {
@@ -4545,7 +4556,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               new Promise(function (resolve, reject) {
                 axios__WEBPACK_IMPORTED_MODULE_1___default().get("products").then(function (res) {
                   _this.products = res.data;
-                  console.log(_this.products);
                   resolve(res);
                 })["catch"](function (err) {
                   console.log(err.response);
@@ -4572,35 +4582,65 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           return product.name;
         }
       });
+    },
+    transactionTotal: function transactionTotal() {
+      this.addedTransaction.total = this.selectedProducts.reduce(function (total, product) {
+        return total += product.price * product.quantity;
+      }, 0).toFixed(2);
+      return this.addedTransaction.total;
     }
   },
   methods: {
-    gettingIndex: function gettingIndex(product) {
-      return this.products.indexOf(product);
+    gettingSelectedProduct: function gettingSelectedProduct(product) {
+      if (product) {
+        return this.products.find(function (element) {
+          return element.name === product.name;
+        }).name;
+      } else {
+        return;
+      }
     },
-    setProduct: function setProduct(product) {
-      var itemIndex = this.selectedProducts.indexOf(product);
-      this.selectedProducts[itemIndex].name = product.name;
-      this.selectedProducts[itemIndex].maxQuantity = this.products.find(function (item) {
-        return item.name === product.name;
-      }).quantity;
-      this.selectedProducts[itemIndex].price = this.products.find(function (item) {
-        return item.name == product.name;
-      }).price;
-      console.log(this.selectedProducts);
+    maxProductQuantity: function maxProductQuantity(product) {
+      if (product.name != '') {
+        return this.products.find(function (element) {
+          return product.name === element.name;
+        }).quantity;
+      }
+    },
+    setProductID: function setProductID(product) {
+      if (product.name != '') {
+        product.id = this.products.find(function (element) {
+          return product.name === element.name;
+        }).id;
+        product.quantity = 0;
+      }
+    },
+    setProductPrice: function setProductPrice(product) {
+      if (product.name != '') {
+        product.price = this.products.find(function (element) {
+          return product.name === element.name;
+        }).price;
+      }
+    },
+    productTotal: function productTotal(product) {
+      var total = product.price * product.quantity;
+      return total.toFixed(2);
     },
     close: function close() {
       this.dialogAdd = false;
     },
     addProduct: function addProduct() {
       this.selectedProducts.push({
-        name: "",
+        product_id: 0,
+        name: name,
         price: 0,
         quantity: 0,
         maxQuantity: 0
       });
     },
-    removeProduct: function removeProduct(item) {},
+    removeProduct: function removeProduct(index) {
+      this.selectedProducts.splice(index, 1);
+    },
     save: function save() {
       var _this3 = this;
 
@@ -4609,7 +4649,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                console.log(_this3.addedTransaction);
+                _this3.$validator.validateAll().then(function (result) {
+                  if (result) {
+                    _this3.addedTransaction.products = _this3.selectedProducts;
+                    new Promise(function (resolve, reject) {
+                      axios__WEBPACK_IMPORTED_MODULE_1___default().post("transactions", _this3.addedTransaction).then(function (res) {
+                        console.log(_this3.addedTransaction);
+                        resolve(res);
+                      })["catch"](function (err) {
+                        console.log(err.response);
+                        reject(err);
+                      });
+                    });
+                  }
+                });
 
               case 1:
               case "end":
@@ -5331,7 +5384,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.addProduct[data-v-542556fa] {\n  align-items: center;\n}\n.Total-container[data-v-542556fa] {\n  width: 100%;\n  display: flex;\n  justify-content: space-between;\n}\n.validation-error[data-v-542556fa] {\n  color: #f00;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.addProduct[data-v-542556fa] {\n  align-items: center;\n}\n.Total-container[data-v-542556fa] {\n  width: 100%;\n  display: flex;\n  justify-content: space-between;\n}\n.validation-error[data-v-542556fa] {\n  color: #f00;\n  font-size:10px;\n}\n.product-btns[data-v-542556fa]{\n  width:100%;\n  height:100%;\n  display:flex;\n  align-items:center;\n  justify-content:space-around;\n}\n.bold[data-v-542556fa]{\n  font-weight:bold;\n}\n\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -24038,24 +24091,37 @@ var render = function () {
                             { attrs: { cols: "12" } },
                             [
                               _c("v-select", {
+                                directives: [
+                                  {
+                                    name: "validate",
+                                    rawName: "v-validate",
+                                    value: "required",
+                                    expression: "'required'",
+                                  },
+                                ],
                                 attrs: {
-                                  items: _vm.clients.map(function (client) {
-                                    return client.name
-                                  }),
+                                  items: _vm.clients,
+                                  "item-text": "name",
+                                  "item-value": "id",
                                   label: "Client",
+                                  name: "Client",
                                 },
                                 model: {
-                                  value: _vm.addedTransaction.client.name,
+                                  value: _vm.addedTransaction.client_id,
                                   callback: function ($$v) {
                                     _vm.$set(
-                                      _vm.addedTransaction.client,
-                                      "name",
+                                      _vm.addedTransaction,
+                                      "client_id",
                                       $$v
                                     )
                                   },
-                                  expression: "addedTransaction.client.name",
+                                  expression: "addedTransaction.client_id",
                                 },
                               }),
+                              _vm._v(" "),
+                              _c("span", { staticClass: "validation-error" }, [
+                                _vm._v(_vm._s(_vm.errors.first("Client"))),
+                              ]),
                             ],
                             1
                           ),
@@ -24071,24 +24137,37 @@ var render = function () {
                             { attrs: { cols: "12" } },
                             [
                               _c("v-select", {
+                                directives: [
+                                  {
+                                    name: "validate",
+                                    rawName: "v-validate",
+                                    value: "required",
+                                    expression: "'required'",
+                                  },
+                                ],
                                 attrs: {
-                                  items: _vm.providers.map(function (provider) {
-                                    return provider.name
-                                  }),
+                                  items: _vm.providers,
+                                  "item-text": "name",
+                                  "item-value": "id",
                                   label: "Provider",
+                                  name: "Provider",
                                 },
                                 model: {
-                                  value: _vm.addedTransaction.provider.name,
+                                  value: _vm.addedTransaction.provider_id,
                                   callback: function ($$v) {
                                     _vm.$set(
-                                      _vm.addedTransaction.provider,
-                                      "name",
+                                      _vm.addedTransaction,
+                                      "provider_id",
                                       $$v
                                     )
                                   },
-                                  expression: "addedTransaction.provider.name",
+                                  expression: "addedTransaction.provider_id",
                                 },
                               }),
+                              _vm._v(" "),
+                              _c("span", { staticClass: "validation-error" }, [
+                                _vm._v(_vm._s(_vm.errors.first("Provider"))),
+                              ]),
                             ],
                             1
                           ),
@@ -24096,141 +24175,171 @@ var render = function () {
                         1
                       ),
                       _vm._v(" "),
-                      _vm._l(_vm.selectedProducts, function (product) {
+                      _vm._l(_vm.selectedProducts, function (product, index) {
                         return _c(
                           "v-row",
-                          { key: product.id, staticClass: "addProduct" },
+                          {
+                            key: index,
+                            staticClass: "addProduct",
+                            attrs: { index: index },
+                          },
                           [
-                            product.name != ""
-                              ? _c(
-                                  "v-col",
-                                  { attrs: { cols: "4" } },
-                                  [
-                                    _c("v-select", {
-                                      attrs: {
-                                        items:
-                                          _vm.availableProductsNames.push(),
-                                        label: "Product",
-                                        clearable: "",
-                                        "hide-selected": "",
-                                      },
-                                      model: {
-                                        value: product.name,
-                                        callback: function ($$v) {
-                                          _vm.$set(product, "name", $$v)
-                                        },
-                                        expression: "product.name",
-                                      },
-                                    }),
+                            _c(
+                              "v-col",
+                              { attrs: { cols: "4" } },
+                              [
+                                _c("v-select", {
+                                  directives: [
+                                    {
+                                      name: "validate",
+                                      rawName: "v-validate",
+                                      value: "required",
+                                      expression: "'required'",
+                                    },
                                   ],
-                                  1
-                                )
-                              : _c(
-                                  "v-col",
-                                  { attrs: { cols: "10" } },
-                                  [
-                                    _c("v-select", {
-                                      attrs: {
-                                        items: _vm.availableProductsNames.push(
-                                          this.products[
-                                            _vm.gettingIndex(product)
-                                          ]
-                                        ),
-                                        label: "Product",
-                                        "hide-selected": "",
-                                      },
-                                      on: {
-                                        change: function ($event) {
-                                          return _vm.setProduct(product)
-                                        },
-                                      },
-                                      model: {
-                                        value: product.name,
-                                        callback: function ($$v) {
-                                          _vm.$set(product, "name", $$v)
-                                        },
-                                        expression: "product.name",
-                                      },
-                                    }),
-                                  ],
-                                  1
+                                  attrs: {
+                                    items: _vm.availableProductsNames.concat([
+                                      _vm.selectedProducts[index],
+                                    ]),
+                                    label: "product",
+                                    name: "product",
+                                    "item-text": "name",
+                                    "hide-selected": "",
+                                  },
+                                  on: {
+                                    input: function ($event) {
+                                      _vm.setProductPrice(product)
+                                      _vm.setProductID(product)
+                                    },
+                                  },
+                                  model: {
+                                    value: product.name,
+                                    callback: function ($$v) {
+                                      _vm.$set(product, "name", $$v)
+                                    },
+                                    expression: "product.name",
+                                  },
+                                }),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  { staticClass: "validation-error" },
+                                  [_vm._v(_vm._s(_vm.errors.first("product")))]
                                 ),
-                            _vm._v(" "),
-                            product.name != ""
-                              ? _c(
-                                  "v-col",
-                                  { attrs: { cols: "3" } },
-                                  [
-                                    _c("v-text-field", {
-                                      attrs: {
-                                        label: "quantity",
-                                        min: 0,
-                                        max: product.maxQuantity,
-                                        type: "number",
-                                      },
-                                      model: {
-                                        value: product.quantity,
-                                        callback: function ($$v) {
-                                          _vm.$set(product, "quantity", $$v)
-                                        },
-                                        expression: "product.quantity",
-                                      },
-                                    }),
-                                  ],
-                                  1
-                                )
-                              : _vm._e(),
-                            _vm._v(" "),
-                            product.name != ""
-                              ? _c(
-                                  "v-col",
-                                  { attrs: { cols: "3" } },
-                                  [
-                                    _c("v-text-field", {
-                                      attrs: {
-                                        label: "total",
-                                        type: "text",
-                                        readonly: "",
-                                        value: (
-                                          product.quantity * product.price
-                                        ).toFixed(2),
-                                      },
-                                    }),
-                                  ],
-                                  1
-                                )
-                              : _vm._e(),
+                              ],
+                              1
+                            ),
                             _vm._v(" "),
                             _c(
                               "v-col",
                               { attrs: { cols: "2" } },
                               [
-                                _c(
-                                  "v-btn",
-                                  {
-                                    attrs: {
-                                      color: "red",
-                                      dark: "",
-                                      small: "",
-                                      rounded: "",
+                                _c("v-text-field", {
+                                  directives: [
+                                    {
+                                      name: "validate",
+                                      rawName: "v-validate",
+                                      value: "required|min_value:1",
+                                      expression: "'required|min_value:1'",
                                     },
+                                  ],
+                                  attrs: {
+                                    label: "quantity",
+                                    name: "quantity",
+                                    min: 0,
+                                    max:
+                                      _vm.maxProductQuantity(product) ||
+                                      product.maxQuantity,
+                                    type: "number",
                                   },
-                                  [
-                                    _c(
-                                      "v-icon",
+                                  model: {
+                                    value: product.quantity,
+                                    callback: function ($$v) {
+                                      _vm.$set(product, "quantity", $$v)
+                                    },
+                                    expression: "product.quantity",
+                                  },
+                                }),
+                                _vm._v(" "),
+                                _c(
+                                  "span",
+                                  { staticClass: "validation-error" },
+                                  [_vm._v(_vm._s(_vm.errors.first("quantity")))]
+                                ),
+                              ],
+                              1
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "v-col",
+                              { attrs: { cols: "3" } },
+                              [
+                                _c("v-text-field", {
+                                  attrs: {
+                                    label: "total",
+                                    type: "text",
+                                    readonly: "",
+                                    value: _vm.productTotal(product) + " DA",
+                                  },
+                                }),
+                              ],
+                              1
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "v-col",
+                              {
+                                staticClass: "product-btns",
+                                attrs: { cols: "3" },
+                              },
+                              [
+                                _vm.selectedProducts.length >= 2
+                                  ? _c(
+                                      "v-btn",
                                       {
-                                        attrs: { "x-small": "" },
+                                        attrs: {
+                                          color: "red",
+                                          dark: "",
+                                          small: "",
+                                          fab: "",
+                                        },
                                         on: {
                                           click: function ($event) {
-                                            return _vm.removeProduct(product)
+                                            return _vm.removeProduct(index)
                                           },
                                         },
                                       },
-                                      [_vm._v("mdi-minus")]
-                                    ),
-                                  ],
-                                  1
-                                ),
+                                      [
+                                        _c("v-icon", { attrs: { small: "" } }, [
+                                          _vm._v("mdi-minus"),
+                                        ]),
+                                      ],
+                                      1
+                                    )
+                                  : _vm._e(),
+                                _vm._v(" "),
+                                index === _vm.selectedProducts.length - 1 &&
+                                _vm.selectedProducts.length <
+                                  _vm.products.length
+                                  ? _c(
+                                      "v-btn",
+                                      {
+                                        attrs: {
+                                          color: "green",
+                                          dark: "",
+                                          small: "",
+                                          fab: "",
+                                        },
+                                        on: {
+                                          click: function ($event) {
+                                            return _vm.addProduct()
+                                          },
+                                        },
+                                      },
+                                      [_c("v-icon", [_vm._v("mdi-plus")])],
+                                      1
+                                    )
+                                  : _vm._e(),
                               ],
                               1
                             ),
@@ -24238,40 +24347,6 @@ var render = function () {
                           1
                         )
                       }),
-                      _vm._v(" "),
-                      this.products.length != this.selectedProducts.length
-                        ? _c(
-                            "v-row",
-                            [
-                              _c(
-                                "v-col",
-                                { attrs: { cols: "12" } },
-                                [
-                                  _c(
-                                    "v-btn",
-                                    {
-                                      attrs: { color: "green", dark: "" },
-                                      on: {
-                                        click: function ($event) {
-                                          return _vm.addProduct()
-                                        },
-                                      },
-                                    },
-                                    [
-                                      _c("v-icon", [_vm._v("mdi-plus")]),
-                                      _vm._v(
-                                        "\n                add product\n              "
-                                      ),
-                                    ],
-                                    1
-                                  ),
-                                ],
-                                1
-                              ),
-                            ],
-                            1
-                          )
-                        : _vm._e(),
                     ],
                     2
                   ),
@@ -24280,7 +24355,13 @@ var render = function () {
               ),
               _vm._v(" "),
               _c("v-card-actions", { staticClass: "Total-container" }, [
-                _c("h2", { staticClass: "pl-4" }, [_vm._v("total :")]),
+                _c("h2", { staticClass: "pl-4" }, [
+                  _vm._v("total : "),
+                  _c("span", { staticClass: "bold" }, [
+                    _vm._v(_vm._s(_vm.transactionTotal)),
+                  ]),
+                  _vm._v(" DA"),
+                ]),
                 _vm._v(" "),
                 _c(
                   "div",

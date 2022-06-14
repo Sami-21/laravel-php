@@ -18,10 +18,13 @@ class CreateProductTransactionTable extends Migration
             $table->foreign('transaction_id')->references('id')->on('transactions');
             $table->integer('product_id')->unsigned();
             $table->foreign('product_id')->references('id')->on('products');
+            $table->integer('quantity')->unsigned();
+            $table->float('price', 8, 2);
+
         });
     }
 
-    /**
+    /** 
      * Reverse the migrations.
      *
      * @return void

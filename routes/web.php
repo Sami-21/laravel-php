@@ -43,7 +43,7 @@ Route::delete('products/{id}', "ProductController@deleteProduct");
 
 Route::get('transactions', "TransactionController@getTransactions");
 
-// Route::post('transactions', "TransactionController@addTransactions");
+Route::post('transactions', "TransactionController@addTransaction");
 
 // Route::put('transactions/{id}', "TransactionController@updateTransaction");
 

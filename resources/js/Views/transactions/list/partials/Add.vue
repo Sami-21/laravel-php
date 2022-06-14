@@ -15,92 +15,95 @@
             <v-row>
               <v-col cols="12">
                 <v-select
-                  v-model="addedTransaction.client.name"
+                  v-model="addedTransaction.client_id"
                   :items="
-                    clients.map((client) => {
-                      return client.name;
-                    })
+                    clients
                   "
+                  item-text="name"
+                  item-value="id"
                   label="Client"
+                  name="Client"
+                  v-validate="'required'"
                 ></v-select>
+                <span class="validation-error">{{ errors.first('Client') }}</span>
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12">
                 <v-select
-                  v-model="addedTransaction.provider.name"
+                  v-model="addedTransaction.provider_id"
                   :items="
-                    providers.map((provider) => {
-                      return provider.name;
-                    })
+                    providers
                   "
+                  item-text="name"
+                  item-value="id"
                   label="Provider"
+                  name="Provider"
+                  v-validate="'required'"
                 ></v-select>
+                <span class="validation-error">{{ errors.first('Provider') }}</span>
               </v-col>
             </v-row>
             <v-row
               class="addProduct"
-              v-for="product in selectedProducts"
-              :key="product.id"
+              v-for="(product,index) in selectedProducts"
+              :index="index"
+              :key="index"
             >
-              <v-col v-if="product.name != ''" cols="4">
+               
+              </v-col>
+              <v-col cols="4">
                 <v-select
                   v-model="product.name"
-                  :items="availableProductsNames.push()"
-                  label="Product"
-                  clearable
+                  :items="[...availableProductsNames,selectedProducts[index]]"
+                  label="product"
+                  name="product"
+                  item-text="name"
+                  @input="setProductPrice(product) ;setProductID(product)"
                   hide-selected
+                  v-validate="'required'"
                 ></v-select>
+                <span class="validation-error">{{ errors.first('product') }}</span>
               </v-col>
-              <v-col v-else cols="10">
-                <v-select
-                  v-model="product.name"
-                  :items="availableProductsNames.push(this.products[gettingIndex(product)])"
-                  label="Product"
-                  hide-selected
-                  @change="setProduct(product)"
-                ></v-select>
-              </v-col>
-              <v-col v-if="product.name != ''" cols="3">
+              <v-col cols="2">
                 <v-text-field
                   v-model="product.quantity"
                   label="quantity"
+                  name="quantity"
                   :min="0"
-                  :max="product.maxQuantity"
+                  :max="maxProductQuantity(product) || product.maxQuantity"
+                  v-validate="'required|min_value:1'"
                   type="number"
                 >
                 </v-text-field>
-              </v-col>
-              <v-col v-if="product.name != ''" cols="3">
+                <span  class="validation-error">{{ errors.first('quantity') }}</span>
+              </v-col>  
+              <v-col cols="3">
                 <v-text-field
                   label="total"
                   type="text"
                   readonly
-                  :value="(product.quantity * product.price).toFixed(2)"
+                  :value="`${productTotal(product)} DA`"
                 >
                 </v-text-field>
               </v-col>
-              <v-col cols="2">
-                <v-btn color="red" dark small rounded>
-                  <v-icon x-small @click="removeProduct(product)"
+              <v-col class="product-btns" cols="3">
+                <v-btn v-if="(selectedProducts.length >= 2)" @click="removeProduct(index)" color="red" dark small fab>
+                  <v-icon small 
                     >mdi-minus</v-icon
                   >
                 </v-btn>
-              </v-col>
-            </v-row>
-            <v-row v-if="this.products.length != this.selectedProducts.length">
-              <v-col cols="12">
-                <v-btn color="green" dark @click="addProduct()">
+                 <v-btn v-if="(index === (selectedProducts.length-1)) && (selectedProducts.length < products.length)" color="green" dark small fab @click="addProduct()">
                   <v-icon>mdi-plus</v-icon>
-                  add product
                 </v-btn>
               </v-col>
+ 
             </v-row>
           </v-container>
         </v-card-text>
 
         <v-card-actions class="Total-container">
-          <h2 class="pl-4">total :</h2>
+          <h2 class="pl-4">total : <span class="bold">{{transactionTotal}}</span> DA</h2>
           <div>
             <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
             <v-btn
@@ -121,19 +124,31 @@ import axios from "axios";
 
 export default {
   data: () => ({
+
     dialogAdd: false,
     clients: [],
     providers: [],
     products: [],
     addedTransaction: {
-      client: {},
-      provider: {},
+      client_id: {},
+      provider_id: {},
+      total:0,
+      products:[],
     },
-    selectedProducts: [],
+    selectedProducts: [{
+        product_id:0,
+        name,
+        price: 0,
+        quantity: 0,
+        maxQuantity: 0,
+      }],
+
   }),
 
   async mounted() {
+
     // Getting All Clients
+
     new Promise((resolve, reject) => {
       axios
         .get("clients")
@@ -148,6 +163,7 @@ export default {
     });
 
     // Getting All Providers
+
     new Promise((resolve, reject) => {
       axios
         .get("providers")
@@ -162,12 +178,12 @@ export default {
     });
 
     // Getting All Products
+    
     new Promise((resolve, reject) => {
       axios
         .get("products")
         .then((res) => {
           this.products = res.data;
-          console.log(this.products);
           resolve(res);
         })
         .catch((err) => {
@@ -175,9 +191,11 @@ export default {
           reject(err);
         });
     });
+
   },
 
   computed: {
+
     availableProductsNames() {
       return this.products.map((product) => {
         if (
@@ -191,25 +209,56 @@ export default {
         }
       });
     },
+
+     transactionTotal() {
+        this.addedTransaction.total = this.selectedProducts.reduce((total , product) => {
+         return total+= product.price * product.quantity
+       } ,0).toFixed(2);
+       return  this.addedTransaction.total;
+    },
+   
   },
+ 
 
   methods: {
-    gettingIndex(product) {
-      return this.products.indexOf(product);
+
+    gettingSelectedProduct(product) {
+      if (product) {
+        return this.products.find((element) => {
+          return element.name === product.name;
+        }).name;
+      } else {
+        return;
+      }
     },
 
-    setProduct(product) {
-      let itemIndex = this.selectedProducts.indexOf(product);
-      this.selectedProducts[itemIndex].name = product.name;
-      this.selectedProducts[itemIndex].maxQuantity = this.products.find(
-        (item) => {
-          return item.name === product.name;
-        }
-      ).quantity;
-      this.selectedProducts[itemIndex].price = this.products.find((item) => {
-        return item.name == product.name;
+   maxProductQuantity(product){
+     if(product.name != ''){
+        return this.products.find(element => {
+        return product.name === element.name
+      }).quantity;
+     }
+    },
+
+  setProductID(product){
+      if(product.name != ''){
+        product.id = this.products.find(element => {
+        return product.name === element.name
+      }).id;
+      product.quantity = 0;
+     }
+    },
+    setProductPrice(product){
+      if(product.name != ''){
+        product.price = this.products.find(element => {
+        return product.name === element.name
       }).price;
-      console.log(this.selectedProducts);
+     }
+    },
+
+     productTotal(product){
+      let total = product.price * product.quantity;
+        return total.toFixed(2);
     },
 
     close() {
@@ -218,23 +267,44 @@ export default {
 
     addProduct() {
       this.selectedProducts.push({
-        name: "",
+        product_id:0,
+        name,
         price: 0,
         quantity: 0,
         maxQuantity: 0,
       });
     },
 
-    removeProduct(item) {},
+    removeProduct(index) {
+      this.selectedProducts.splice(index,1);
+    },
 
     async save() {
-      console.log(this.addedTransaction);
+      this.$validator.validateAll().then(result => {
+        if (result) {
+          this.addedTransaction.products = this.selectedProducts;
+            new Promise((resolve, reject) => {
+          axios
+        .post("transactions" , this.addedTransaction )
+        .then((res) => {
+          console.log(this.addedTransaction);
+          resolve(res);
+        })
+        .catch((err) => {
+          console.log(err.response);
+          reject(err);
+        });
+    })
+        }
+      });
+    
     },
   },
 };
 </script>
 
 <style scoped>
+
 .addProduct {
   align-items: center;
 }
@@ -247,5 +317,19 @@ export default {
 
 .validation-error {
   color: #f00;
+  font-size:10px;
 }
+
+.product-btns{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+}
+
+.bold{
+  font-weight:bold;
+}
+
 </style>

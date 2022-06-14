@@ -9,6 +9,7 @@ class Transaction extends Model
     protected $fillable = [
         "client_id",
         "provider_id",
+        "total",
     ];
 
     public function client()
@@ -22,6 +23,6 @@ class Transaction extends Model
     }
     public function products()
     {
-        return $this->belongsToMany('App\Products');
+        return $this->belongsToMany('App\Product')->withPivot(['price','quantity']);
     }
 }
