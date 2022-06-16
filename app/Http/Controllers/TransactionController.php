@@ -18,10 +18,8 @@ class TransactionController extends Controller
     {
 
         $validated = $request->validated();
-
-        if (Client::get()->contains('id', $request->client_id) && Provider::get()->contains('id', $request->provider_id)) {
-
-            Transaction::create($validated);
-        }
+        $transaction = Transaction::create($validated);
+        $transaction->products()->attach($request->products);
     }
 }
+

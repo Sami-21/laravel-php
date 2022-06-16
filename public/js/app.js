@@ -4509,18 +4509,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       clients: [],
       providers: [],
       products: [],
-      addedTransaction: {
-        client_id: {},
-        provider_id: {},
+      Transaction: {
+        client_id: null,
+        provider_id: null,
         total: 0,
         products: []
       },
       selectedProducts: [{
-        product_id: 0,
-        name: name,
-        price: 0,
-        quantity: 0,
-        maxQuantity: 0
+        product: null,
+        quantity: 0
       }]
     };
   },
@@ -4536,6 +4533,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               new Promise(function (resolve, reject) {
                 axios__WEBPACK_IMPORTED_MODULE_1___default().get("clients").then(function (res) {
                   _this.clients = res.data;
+                  console.log(_this.clients);
                   resolve(res);
                 })["catch"](function (err) {
                   console.log(err.response);
@@ -4546,6 +4544,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               new Promise(function (resolve, reject) {
                 axios__WEBPACK_IMPORTED_MODULE_1___default().get("providers").then(function (res) {
                   _this.providers = res.data;
+                  console.log(_this.providers);
                   resolve(res);
                 })["catch"](function (err) {
                   console.log(err.response);
@@ -4584,43 +4583,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       });
     },
     transactionTotal: function transactionTotal() {
-      this.addedTransaction.total = this.selectedProducts.reduce(function (total, product) {
+      this.Transaction.total = this.selectedProducts.reduce(function (total, product) {
         return total += product.price * product.quantity;
       }, 0).toFixed(2);
-      return this.addedTransaction.total;
+      return this.Transaction.total;
     }
   },
   methods: {
-    gettingSelectedProduct: function gettingSelectedProduct(product) {
-      if (product) {
-        return this.products.find(function (element) {
-          return element.name === product.name;
-        }).name;
-      } else {
-        return;
-      }
-    },
-    maxProductQuantity: function maxProductQuantity(product) {
-      if (product.name != '') {
-        return this.products.find(function (element) {
-          return product.name === element.name;
-        }).quantity;
-      }
-    },
-    setProductID: function setProductID(product) {
-      if (product.name != '') {
-        product.id = this.products.find(function (element) {
-          return product.name === element.name;
-        }).id;
-        product.quantity = 0;
-      }
-    },
-    setProductPrice: function setProductPrice(product) {
-      if (product.name != '') {
-        product.price = this.products.find(function (element) {
-          return product.name === element.name;
-        }).price;
-      }
+    Printing: function Printing(product) {
+      console.log(product);
     },
     productTotal: function productTotal(product) {
       var total = product.price * product.quantity;
@@ -4631,11 +4602,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     addProduct: function addProduct() {
       this.selectedProducts.push({
-        product_id: 0,
         name: name,
         price: 0,
-        quantity: 0,
-        maxQuantity: 0
+        quantity: 0
       });
     },
     removeProduct: function removeProduct(index) {
@@ -4651,10 +4620,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 _this3.$validator.validateAll().then(function (result) {
                   if (result) {
-                    _this3.addedTransaction.products = _this3.selectedProducts;
+                    _this3.selectedProducts.forEach(function (selectedProduct) {
+                      _this3.Transaction.products.push({
+                        product_id: selectedProduct.product.id
+                      });
+                    });
+
+                    console.log(_this3.Transaction);
                     new Promise(function (resolve, reject) {
-                      axios__WEBPACK_IMPORTED_MODULE_1___default().post("transactions", _this3.addedTransaction).then(function (res) {
-                        console.log(_this3.addedTransaction);
+                      axios__WEBPACK_IMPORTED_MODULE_1___default().post("transactions", _this3.Transaction).then(function (res) {
+                        console.log("data", res);
                         resolve(res);
                       })["catch"](function (err) {
                         console.log(err.response);
@@ -5384,7 +5359,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.addProduct[data-v-542556fa] {\n  align-items: center;\n}\n.Total-container[data-v-542556fa] {\n  width: 100%;\n  display: flex;\n  justify-content: space-between;\n}\n.validation-error[data-v-542556fa] {\n  color: #f00;\n  font-size:10px;\n}\n.product-btns[data-v-542556fa]{\n  width:100%;\n  height:100%;\n  display:flex;\n  align-items:center;\n  justify-content:space-around;\n}\n.bold[data-v-542556fa]{\n  font-weight:bold;\n}\n\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.addProduct[data-v-542556fa] {\n  align-items: center;\n}\n.Total-container[data-v-542556fa] {\n  width: 100%;\n  display: flex;\n  justify-content: space-between;\n}\n.validation-error[data-v-542556fa] {\n  color: #f00;\n  font-size: 10px;\n}\n.product-btns[data-v-542556fa] {\n  width: 100%;\n  height: 100%;\n  display: flex;\n  align-items: center;\n  justify-content: space-around;\n}\n.bold[data-v-542556fa] {\n  font-weight: bold;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -24106,16 +24081,19 @@ var render = function () {
                                   label: "Client",
                                   name: "Client",
                                 },
-                                model: {
-                                  value: _vm.addedTransaction.client_id,
-                                  callback: function ($$v) {
-                                    _vm.$set(
-                                      _vm.addedTransaction,
-                                      "client_id",
-                                      $$v
+                                on: {
+                                  input: function ($event) {
+                                    return _vm.Printing(
+                                      _vm.Transaction.client_id
                                     )
                                   },
-                                  expression: "addedTransaction.client_id",
+                                },
+                                model: {
+                                  value: _vm.Transaction.client_id,
+                                  callback: function ($$v) {
+                                    _vm.$set(_vm.Transaction, "client_id", $$v)
+                                  },
+                                  expression: "Transaction.client_id",
                                 },
                               }),
                               _vm._v(" "),
@@ -24153,15 +24131,15 @@ var render = function () {
                                   name: "Provider",
                                 },
                                 model: {
-                                  value: _vm.addedTransaction.provider_id,
+                                  value: _vm.Transaction.provider_id,
                                   callback: function ($$v) {
                                     _vm.$set(
-                                      _vm.addedTransaction,
+                                      _vm.Transaction,
                                       "provider_id",
                                       $$v
                                     )
                                   },
-                                  expression: "addedTransaction.provider_id",
+                                  expression: "Transaction.provider_id",
                                 },
                               }),
                               _vm._v(" "),
@@ -24202,28 +24180,39 @@ var render = function () {
                                       _vm.selectedProducts[index],
                                     ]),
                                     label: "product",
-                                    name: "product",
+                                    name: "name",
                                     "item-text": "name",
+                                    "item-value": "id",
                                     "hide-selected": "",
+                                    "return-object": "",
                                   },
                                   on: {
                                     input: function ($event) {
-                                      _vm.setProductPrice(product)
-                                      _vm.setProductID(product)
+                                      return _vm.Printing(product.product)
                                     },
                                   },
                                   model: {
-                                    value: product.name,
+                                    value: product.product,
                                     callback: function ($$v) {
-                                      _vm.$set(product, "name", $$v)
+                                      _vm.$set(product, "product", $$v)
                                     },
-                                    expression: "product.name",
+                                    expression: "product.product",
                                   },
                                 }),
                                 _vm._v(" "),
                                 _c(
                                   "span",
-                                  { staticClass: "validation-error" },
+                                  {
+                                    directives: [
+                                      {
+                                        name: "show",
+                                        rawName: "v-show",
+                                        value: _vm.errors.has("product"),
+                                        expression: "errors.has('product')",
+                                      },
+                                    ],
+                                    staticClass: "validation-error",
+                                  },
                                   [_vm._v(_vm._s(_vm.errors.first("product")))]
                                 ),
                               ],
@@ -24239,17 +24228,14 @@ var render = function () {
                                     {
                                       name: "validate",
                                       rawName: "v-validate",
-                                      value: "required|min_value:1",
-                                      expression: "'required|min_value:1'",
+                                      value: "required|min_value:1 ",
+                                      expression: "`required|min_value:1 `",
                                     },
                                   ],
                                   attrs: {
                                     label: "quantity",
                                     name: "quantity",
                                     min: 0,
-                                    max:
-                                      _vm.maxProductQuantity(product) ||
-                                      product.maxQuantity,
                                     type: "number",
                                   },
                                   model: {
@@ -24262,8 +24248,23 @@ var render = function () {
                                 }),
                                 _vm._v(" "),
                                 _c(
-                                  "span",
-                                  { staticClass: "validation-error" },
+                                  "div",
+                                  {
+                                    directives: [
+                                      {
+                                        name: "show",
+                                        rawName: "v-show",
+                                        value:
+                                          product.quantity == null ||
+                                          product.quantity == 0 ||
+                                          product.quantity >
+                                            _vm.getMaxQuantity(product),
+                                        expression:
+                                          "product.quantity == null || product.quantity == 0  || product.quantity > getMaxQuantity(product)",
+                                      },
+                                    ],
+                                    staticClass: "validation-error",
+                                  },
                                   [_vm._v(_vm._s(_vm.errors.first("quantity")))]
                                 ),
                               ],

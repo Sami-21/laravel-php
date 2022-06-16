@@ -15,13 +15,14 @@
             <v-row>
               <v-col cols="12">
                 <v-select
-                  v-model="addedTransaction.client_id"
+                  v-model="Transaction.client_id"
                   :items="
                     clients
                   "
                   item-text="name"
                   item-value="id"
                   label="Client"
+                  @input="Printing(Transaction.client_id)"
                   name="Client"
                   v-validate="'required'"
                 ></v-select>
@@ -31,7 +32,7 @@
             <v-row>
               <v-col cols="12">
                 <v-select
-                  v-model="addedTransaction.provider_id"
+                  v-model="Transaction.provider_id"
                   :items="
                     providers
                   "
@@ -49,21 +50,21 @@
               v-for="(product,index) in selectedProducts"
               :index="index"
               :key="index"
-            >
-               
-              </v-col>
+            >               
               <v-col cols="4">
                 <v-select
-                  v-model="product.name"
+                  v-model="product.product"
                   :items="[...availableProductsNames,selectedProducts[index]]"
                   label="product"
-                  name="product"
+                  name="name"
                   item-text="name"
-                  @input="setProductPrice(product) ;setProductID(product)"
+                  item-value="id"
                   hide-selected
+                  return-object
+                  @input="Printing(product.product)"
                   v-validate="'required'"
                 ></v-select>
-                <span class="validation-error">{{ errors.first('product') }}</span>
+                <span class="validation-error" v-show="errors.has('product')">{{ errors.first('product') }}</span>
               </v-col>
               <v-col cols="2">
                 <v-text-field
@@ -71,12 +72,11 @@
                   label="quantity"
                   name="quantity"
                   :min="0"
-                  :max="maxProductQuantity(product) || product.maxQuantity"
-                  v-validate="'required|min_value:1'"
+                  v-validate="`required|min_value:1 `"
                   type="number"
                 >
                 </v-text-field>
-                <span  class="validation-error">{{ errors.first('quantity') }}</span>
+                <div  class="validation-error" v-show="product.quantity == null || product.quantity == 0  || product.quantity > getMaxQuantity(product)" >{{ errors.first('quantity') }}</div>
               </v-col>  
               <v-col cols="3">
                 <v-text-field
@@ -124,29 +124,25 @@ import axios from "axios";
 
 export default {
   data: () => ({
-
     dialogAdd: false,
     clients: [],
     providers: [],
     products: [],
-    addedTransaction: {
-      client_id: {},
-      provider_id: {},
-      total:0,
-      products:[],
+    Transaction: {
+      client_id: null,
+      provider_id: null,
+      total: 0,
+      products: [],
     },
-    selectedProducts: [{
-        product_id:0,
-        name,
-        price: 0,
+    selectedProducts: [
+      {
+        product: null,
         quantity: 0,
-        maxQuantity: 0,
-      }],
-
+      },
+    ],
   }),
 
   async mounted() {
-
     // Getting All Clients
 
     new Promise((resolve, reject) => {
@@ -154,6 +150,7 @@ export default {
         .get("clients")
         .then((res) => {
           this.clients = res.data;
+          console.log(this.clients);
           resolve(res);
         })
         .catch((err) => {
@@ -169,6 +166,7 @@ export default {
         .get("providers")
         .then((res) => {
           this.providers = res.data;
+          console.log(this.providers)  ;
           resolve(res);
         })
         .catch((err) => {
@@ -178,7 +176,7 @@ export default {
     });
 
     // Getting All Products
-    
+
     new Promise((resolve, reject) => {
       axios
         .get("products")
@@ -191,11 +189,9 @@ export default {
           reject(err);
         });
     });
-
   },
 
   computed: {
-
     availableProductsNames() {
       return this.products.map((product) => {
         if (
@@ -210,55 +206,24 @@ export default {
       });
     },
 
-     transactionTotal() {
-        this.addedTransaction.total = this.selectedProducts.reduce((total , product) => {
-         return total+= product.price * product.quantity
-       } ,0).toFixed(2);
-       return  this.addedTransaction.total;
+    transactionTotal() {
+      this.Transaction.total = this.selectedProducts
+        .reduce((total, product) => {
+          return (total += product.price * product.quantity);
+        }, 0)
+        .toFixed(2);
+      return this.Transaction.total;
     },
-   
   },
- 
 
   methods: {
-
-    gettingSelectedProduct(product) {
-      if (product) {
-        return this.products.find((element) => {
-          return element.name === product.name;
-        }).name;
-      } else {
-        return;
-      }
+    Printing(product){
+      console.log(product);
     },
 
-   maxProductQuantity(product){
-     if(product.name != ''){
-        return this.products.find(element => {
-        return product.name === element.name
-      }).quantity;
-     }
-    },
-
-  setProductID(product){
-      if(product.name != ''){
-        product.id = this.products.find(element => {
-        return product.name === element.name
-      }).id;
-      product.quantity = 0;
-     }
-    },
-    setProductPrice(product){
-      if(product.name != ''){
-        product.price = this.products.find(element => {
-        return product.name === element.name
-      }).price;
-     }
-    },
-
-     productTotal(product){
+    productTotal(product) {
       let total = product.price * product.quantity;
-        return total.toFixed(2);
+      return total.toFixed(2);
     },
 
     close() {
@@ -267,44 +232,46 @@ export default {
 
     addProduct() {
       this.selectedProducts.push({
-        product_id:0,
         name,
         price: 0,
         quantity: 0,
-        maxQuantity: 0,
       });
     },
 
     removeProduct(index) {
-      this.selectedProducts.splice(index,1);
+      this.selectedProducts.splice(index, 1);
     },
 
     async save() {
-      this.$validator.validateAll().then(result => {
+      this.$validator.validateAll().then((result) => {
         if (result) {
-          this.addedTransaction.products = this.selectedProducts;
-            new Promise((resolve, reject) => {
-          axios
-        .post("transactions" , this.addedTransaction )
-        .then((res) => {
-          console.log(this.addedTransaction);
-          resolve(res);
-        })
-        .catch((err) => {
-          console.log(err.response);
-          reject(err);
-        });
-    })
+          this.selectedProducts.forEach(selectedProduct=>{
+            this.Transaction.products.push({
+              product_id: selectedProduct.product.id,
+
+            })
+          })
+          console.log(this.Transaction);
+          new Promise((resolve, reject) => {
+            axios
+              .post("transactions", this.Transaction)
+              .then((res) => {
+                console.log("data", res);
+                resolve(res);
+              })
+              .catch((err) => {
+                console.log(err.response);
+                reject(err);
+              });
+          });
         }
       });
-    
     },
   },
 };
 </script>
 
 <style scoped>
-
 .addProduct {
   align-items: center;
 }
@@ -317,19 +284,22 @@ export default {
 
 .validation-error {
   color: #f00;
-  font-size:10px;
+  font-size: 10px;
 }
 
-.product-btns{
-  width:100%;
-  height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:space-around;
+.product-btns {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 }
 
-.bold{
-  font-weight:bold;
+.bold {
+  font-weight: bold;
 }
-
 </style>
+
+
+
+
