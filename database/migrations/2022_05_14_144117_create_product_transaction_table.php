@@ -18,9 +18,8 @@ class CreateProductTransactionTable extends Migration
             $table->foreign('transaction_id')->references('id')->on('transactions');
             $table->integer('product_id')->unsigned();
             $table->foreign('product_id')->references('id')->on('products');
-            $table->integer('quantity')->unsigned();
-            $table->float('price', 8, 2);
-
+            $table->integer('quantity')->default(0);
+            $table->float('price', 8, 2)->default(0);
         });
     }
 
@@ -34,3 +33,11 @@ class CreateProductTransactionTable extends Migration
         Schema::dropIfExists('product_transaction');
     }
 }
+
+
+
+
+
+
+
+// "SQLSTATE[21S01]: Insert value list does not match column list: 1136 Column count doesn't match value count at row 3 (SQL: insert into `product_transaction` (`product_id`, `transaction_id`) values (0, 1), (1, 1), (10, 2, 1), (3, 3, 1))"

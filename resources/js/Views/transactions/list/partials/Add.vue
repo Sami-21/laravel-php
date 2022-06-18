@@ -16,68 +16,85 @@
               <v-col cols="12">
                 <v-select
                   v-model="Transaction.client_id"
-                  :items="
-                    clients
-                  "
+                  :items="clients"
                   item-text="name"
                   item-value="id"
                   label="Client"
-                  @input="Printing(Transaction.client_id)"
                   name="Client"
                   v-validate="'required'"
                 ></v-select>
-                <span class="validation-error">{{ errors.first('Client') }}</span>
+                <span class="validation-error">{{
+                  errors.first("Client")
+                }}</span>
               </v-col>
             </v-row>
+
             <v-row>
               <v-col cols="12">
                 <v-select
                   v-model="Transaction.provider_id"
-                  :items="
-                    providers
-                  "
+                  :items="providers"
                   item-text="name"
                   item-value="id"
                   label="Provider"
                   name="Provider"
                   v-validate="'required'"
                 ></v-select>
-                <span class="validation-error">{{ errors.first('Provider') }}</span>
+                <span class="validation-error">{{
+                  errors.first("Provider")
+                }}</span>
               </v-col>
             </v-row>
+
             <v-row
               class="addProduct"
-              v-for="(product,index) in selectedProducts"
+              v-for="(product, index) in Transaction.products"
               :index="index"
               :key="index"
-            >               
+            >
               <v-col cols="4">
                 <v-select
                   v-model="product.product"
-                  :items="[...availableProductsNames,selectedProducts[index]]"
+                  :items="availableProductsList(index)"
                   label="product"
                   name="name"
                   item-text="name"
-                  item-value="id"
                   hide-selected
                   return-object
-                  @input="Printing(product.product)"
                   v-validate="'required'"
                 ></v-select>
-                <span class="validation-error" v-show="errors.has('product')">{{ errors.first('product') }}</span>
+                <span class="validation-error" v-show="errors.has('product')">{{
+                  errors.first("product")
+                }}</span>
               </v-col>
+
               <v-col cols="2">
                 <v-text-field
                   v-model="product.quantity"
                   label="quantity"
                   name="quantity"
+                  :disabled="product.product == null"
                   :min="0"
-                  v-validate="`required|min_value:1 `"
+                  v-validate="
+                    `required|min_value:1|max_value:${maxQuantity(
+                      product.product
+                    )}`
+                  "
                   type="number"
                 >
                 </v-text-field>
-                <div  class="validation-error" v-show="product.quantity == null || product.quantity == 0  || product.quantity > getMaxQuantity(product)" >{{ errors.first('quantity') }}</div>
-              </v-col>  
+                <span
+                  class="validation-error"
+                  v-show="
+                    product.quantity == null ||
+                    product.quantity == 0 ||
+                    product.quantity > product.product.quantity
+                  "
+                >
+                  {{ errors.first("quantity") }}
+                </span>
+              </v-col>
+
               <v-col cols="3">
                 <v-text-field
                   label="total"
@@ -87,23 +104,40 @@
                 >
                 </v-text-field>
               </v-col>
+
               <v-col class="product-btns" cols="3">
-                <v-btn v-if="(selectedProducts.length >= 2)" @click="removeProduct(index)" color="red" dark small fab>
-                  <v-icon small 
-                    >mdi-minus</v-icon
-                  >
+                <v-btn
+                  v-if="Transaction.products.length >= 2"
+                  @click="removeProduct(index)"
+                  color="red"
+                  dark
+                  small
+                  fab
+                >
+                  <v-icon>mdi-minus</v-icon>
                 </v-btn>
-                 <v-btn v-if="(index === (selectedProducts.length-1)) && (selectedProducts.length < products.length)" color="green" dark small fab @click="addProduct()">
+                <v-btn
+                  v-if="
+                    index === Transaction.products.length - 1 &&
+                    Transaction.products.length < products.length
+                  "
+                  color="green"
+                  dark
+                  small
+                  fab
+                  @click="addProduct()"
+                >
                   <v-icon>mdi-plus</v-icon>
                 </v-btn>
               </v-col>
- 
             </v-row>
           </v-container>
         </v-card-text>
 
         <v-card-actions class="Total-container">
-          <h2 class="pl-4">total : <span class="bold">{{transactionTotal}}</span> DA</h2>
+          <h2 class="pl-4">
+            total : <span class="bold">{{ transactionTotal }}</span> DA
+          </h2>
           <div>
             <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
             <v-btn
@@ -132,25 +166,67 @@ export default {
       client_id: null,
       provider_id: null,
       total: 0,
-      products: [],
+      products: [
+        {
+          product: null,
+          quantity: 0,
+        },
+      ],
     },
-    selectedProducts: [
-      {
-        product: null,
-        quantity: 0,
-      },
-    ],
   }),
 
-  async mounted() {
-    // Getting All Clients
+  mounted() {
+
+  this.getClients();
+
+  this.getProviders();
+
+  this.getProducts();
+
+  },
+
+  computed: {
+    
+    availableProducts() {
+      return this.products.filter((product) => {
+        
+        let SelectedProducts = this.Transaction.products
+            .map((el) => {
+              if (el.product) {
+                return el.product;
+              }
+            });
+
+        return !(SelectedProducts.includes(product))
+      });
+    },
+
+    transactionTotal() {
+      
+      this.Transaction.total = parseFloat(
+        this.Transaction.products
+          .reduce((total, product) => {
+            if (product.product) { // is not null 
+              return (total += product.product.price * product.quantity);
+            } else {
+              return 0;
+            }
+          }, 0)
+      ).toFixed(2);
+
+      return this.Transaction.total;
+    },
+  },
+
+  methods: {
+  async  getClients(){
+        // Getting All Clients
 
     new Promise((resolve, reject) => {
       axios
-        .get("clients")
+        .get("/clients")
         .then((res) => {
           this.clients = res.data;
-          console.log(this.clients);
           resolve(res);
         })
         .catch((err) => {
@@ -158,15 +234,16 @@ export default {
           reject(err);
         });
     });
+    },
 
+  async  getProviders(){
     // Getting All Providers
 
     new Promise((resolve, reject) => {
       axios
-        .get("providers")
+        .get("/providers")
         .then((res) => {
           this.providers = res.data;
-          console.log(this.providers)  ;
           resolve(res);
         })
         .catch((err) => {
@@ -174,12 +251,14 @@ export default {
           reject(err);
         });
     });
+  },
 
+  async  getProducts(){
     // Getting All Products
 
     new Promise((resolve, reject) => {
       axios
-        .get("products")
+        .get("/products")
         .then((res) => {
           this.products = res.data;
           resolve(res);
@@ -191,39 +270,31 @@ export default {
     });
   },
 
-  computed: {
-    availableProductsNames() {
-      return this.products.map((product) => {
-        if (
-          this.selectedProducts
-            .map((el) => {
-              return el.name;
-            })
-            .includes(product.name) === false
-        ) {
-          return product.name;
-        }
-      });
+
+
+
+
+
+    availableProductsList(index) {
+      return [
+        ...this.availableProducts,
+        this.Transaction.products[index].product,
+      ];
     },
 
-    transactionTotal() {
-      this.Transaction.total = this.selectedProducts
-        .reduce((total, product) => {
-          return (total += product.price * product.quantity);
-        }, 0)
-        .toFixed(2);
-      return this.Transaction.total;
-    },
-  },
-
-  methods: {
-    Printing(product){
-      console.log(product);
+    maxQuantity(product) {
+      if (product) {
+        return product.quantity;
+      } 
     },
 
     productTotal(product) {
-      let total = product.price * product.quantity;
-      return total.toFixed(2);
+      if (product.product) {
+        let total = product.product.price * product.quantity;
+        return total.toFixed(2);
+      } else {
+        return 0;
+      }
     },
 
     close() {
@@ -231,30 +302,26 @@ export default {
     },
 
     addProduct() {
-      this.selectedProducts.push({
-        name,
-        price: 0,
+      this.Transaction.products.push({
+        product: null,
         quantity: 0,
       });
     },
 
     removeProduct(index) {
-      this.selectedProducts.splice(index, 1);
+
+      this.Transaction.products.splice(index, 1);
+
     },
 
     async save() {
+
       this.$validator.validateAll().then((result) => {
         if (result) {
-          this.selectedProducts.forEach(selectedProduct=>{
-            this.Transaction.products.push({
-              product_id: selectedProduct.product.id,
-
-            })
-          })
           console.log(this.Transaction);
           new Promise((resolve, reject) => {
             axios
-              .post("transactions", this.Transaction)
+              .post("/transactions", this.Transaction)
               .then((res) => {
                 console.log("data", res);
                 resolve(res);
@@ -265,13 +332,16 @@ export default {
               });
           });
         }
+        
       });
     },
+
   },
 };
 </script>
 
 <style scoped>
+
 .addProduct {
   align-items: center;
 }

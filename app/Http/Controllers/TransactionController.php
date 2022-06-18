@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\TransactionRequest;
 use App\Transaction;
-use App\Client;
-use App\Provider;
+use App\Product;
+
 
 class TransactionController extends Controller
 {
@@ -19,7 +19,14 @@ class TransactionController extends Controller
 
         $validated = $request->validated();
         $transaction = Transaction::create($validated);
-        $transaction->products()->attach($request->products);
+        foreach ($request->products as $product) {
+            $transaction->products()->attach(
+                [
+                    $product['product']['id'],
+                    ['quantity' => $product['quantity']],
+                    ['price' => $product['product']['price']],
+                ]
+            );
+        }
     }
 }
-

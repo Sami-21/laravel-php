@@ -4374,12 +4374,58 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -4513,104 +4559,73 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         client_id: null,
         provider_id: null,
         total: 0,
-        products: []
-      },
-      selectedProducts: [{
-        product: null,
-        quantity: 0
-      }]
+        products: [{
+          product: null,
+          quantity: 0
+        }]
+      }
     };
   },
   mounted: function mounted() {
-    var _this = this;
-
-    return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
-      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
-        while (1) {
-          switch (_context.prev = _context.next) {
-            case 0:
-              // Getting All Clients
-              new Promise(function (resolve, reject) {
-                axios__WEBPACK_IMPORTED_MODULE_1___default().get("clients").then(function (res) {
-                  _this.clients = res.data;
-                  console.log(_this.clients);
-                  resolve(res);
-                })["catch"](function (err) {
-                  console.log(err.response);
-                  reject(err);
-                });
-              }); // Getting All Providers
-
-              new Promise(function (resolve, reject) {
-                axios__WEBPACK_IMPORTED_MODULE_1___default().get("providers").then(function (res) {
-                  _this.providers = res.data;
-                  console.log(_this.providers);
-                  resolve(res);
-                })["catch"](function (err) {
-                  console.log(err.response);
-                  reject(err);
-                });
-              }); // Getting All Products
-
-              new Promise(function (resolve, reject) {
-                axios__WEBPACK_IMPORTED_MODULE_1___default().get("products").then(function (res) {
-                  _this.products = res.data;
-                  resolve(res);
-                })["catch"](function (err) {
-                  console.log(err.response);
-                  reject(err);
-                });
-              });
-
-            case 3:
-            case "end":
-              return _context.stop();
-          }
-        }
-      }, _callee);
-    }))();
+    this.getClients();
+    this.getProviders();
+    this.getProducts();
   },
   computed: {
-    availableProductsNames: function availableProductsNames() {
-      var _this2 = this;
+    availableProducts: function availableProducts() {
+      var _this = this;
 
-      return this.products.map(function (product) {
-        if (_this2.selectedProducts.map(function (el) {
-          return el.name;
-        }).includes(product.name) === false) {
-          return product.name;
-        }
+      return this.products.filter(function (product) {
+        var SelectedProducts = _this.Transaction.products.map(function (el) {
+          if (el.product) {
+            return el.product;
+          }
+        });
+
+        return !SelectedProducts.includes(product);
       });
     },
     transactionTotal: function transactionTotal() {
-      this.Transaction.total = this.selectedProducts.reduce(function (total, product) {
-        return total += product.price * product.quantity;
-      }, 0).toFixed(2);
+      this.Transaction.total = parseFloat(this.Transaction.products.reduce(function (total, product) {
+        if (product.product) {
+          // is not null 
+          return total += product.product.price * product.quantity;
+        } else {
+          return 0;
+        }
+      }, 0)).toFixed(2);
       return this.Transaction.total;
     }
   },
   methods: {
-    Printing: function Printing(product) {
-      console.log(product);
+    getClients: function getClients() {
+      var _this2 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                // Getting All Clients
+                new Promise(function (resolve, reject) {
+                  axios__WEBPACK_IMPORTED_MODULE_1___default().get("/clients").then(function (res) {
+                    _this2.clients = res.data;
+                    resolve(res);
+                  })["catch"](function (err) {
+                    console.log(err.response);
+                    reject(err);
+                  });
+                });
+
+              case 1:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }))();
     },
-    productTotal: function productTotal(product) {
-      var total = product.price * product.quantity;
-      return total.toFixed(2);
-    },
-    close: function close() {
-      this.dialogAdd = false;
-    },
-    addProduct: function addProduct() {
-      this.selectedProducts.push({
-        name: name,
-        price: 0,
-        quantity: 0
-      });
-    },
-    removeProduct: function removeProduct(index) {
-      this.selectedProducts.splice(index, 1);
-    },
-    save: function save() {
+    getProviders: function getProviders() {
       var _this3 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee2() {
@@ -4618,17 +4633,93 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _this3.$validator.validateAll().then(function (result) {
-                  if (result) {
-                    _this3.selectedProducts.forEach(function (selectedProduct) {
-                      _this3.Transaction.products.push({
-                        product_id: selectedProduct.product.id
-                      });
-                    });
+                // Getting All Providers
+                new Promise(function (resolve, reject) {
+                  axios__WEBPACK_IMPORTED_MODULE_1___default().get("/providers").then(function (res) {
+                    _this3.providers = res.data;
+                    resolve(res);
+                  })["catch"](function (err) {
+                    console.log(err.response);
+                    reject(err);
+                  });
+                });
 
-                    console.log(_this3.Transaction);
+              case 1:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }))();
+    },
+    getProducts: function getProducts() {
+      var _this4 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee3() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                // Getting All Products
+                new Promise(function (resolve, reject) {
+                  axios__WEBPACK_IMPORTED_MODULE_1___default().get("/products").then(function (res) {
+                    _this4.products = res.data;
+                    resolve(res);
+                  })["catch"](function (err) {
+                    console.log(err.response);
+                    reject(err);
+                  });
+                });
+
+              case 1:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }))();
+    },
+    availableProductsList: function availableProductsList(index) {
+      return [].concat(_toConsumableArray(this.availableProducts), [this.Transaction.products[index].product]);
+    },
+    maxQuantity: function maxQuantity(product) {
+      if (product) {
+        return product.quantity;
+      }
+    },
+    productTotal: function productTotal(product) {
+      if (product.product) {
+        var total = product.product.price * product.quantity;
+        return total.toFixed(2);
+      } else {
+        return 0;
+      }
+    },
+    close: function close() {
+      this.dialogAdd = false;
+    },
+    addProduct: function addProduct() {
+      this.Transaction.products.push({
+        product: null,
+        quantity: 0
+      });
+    },
+    removeProduct: function removeProduct(index) {
+      this.Transaction.products.splice(index, 1);
+    },
+    save: function save() {
+      var _this5 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee4() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                _this5.$validator.validateAll().then(function (result) {
+                  if (result) {
+                    console.log(_this5.Transaction);
                     new Promise(function (resolve, reject) {
-                      axios__WEBPACK_IMPORTED_MODULE_1___default().post("transactions", _this3.Transaction).then(function (res) {
+                      axios__WEBPACK_IMPORTED_MODULE_1___default().post("/transactions", _this5.Transaction).then(function (res) {
                         console.log("data", res);
                         resolve(res);
                       })["catch"](function (err) {
@@ -4641,10 +4732,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
               case 1:
               case "end":
-                return _context2.stop();
+                return _context4.stop();
             }
           }
-        }, _callee2);
+        }, _callee4);
       }))();
     }
   }
@@ -24081,13 +24172,6 @@ var render = function () {
                                   label: "Client",
                                   name: "Client",
                                 },
-                                on: {
-                                  input: function ($event) {
-                                    return _vm.Printing(
-                                      _vm.Transaction.client_id
-                                    )
-                                  },
-                                },
                                 model: {
                                   value: _vm.Transaction.client_id,
                                   callback: function ($$v) {
@@ -24153,201 +24237,207 @@ var render = function () {
                         1
                       ),
                       _vm._v(" "),
-                      _vm._l(_vm.selectedProducts, function (product, index) {
-                        return _c(
-                          "v-row",
-                          {
-                            key: index,
-                            staticClass: "addProduct",
-                            attrs: { index: index },
-                          },
-                          [
-                            _c(
-                              "v-col",
-                              { attrs: { cols: "4" } },
-                              [
-                                _c("v-select", {
-                                  directives: [
-                                    {
-                                      name: "validate",
-                                      rawName: "v-validate",
-                                      value: "required",
-                                      expression: "'required'",
-                                    },
-                                  ],
-                                  attrs: {
-                                    items: _vm.availableProductsNames.concat([
-                                      _vm.selectedProducts[index],
-                                    ]),
-                                    label: "product",
-                                    name: "name",
-                                    "item-text": "name",
-                                    "item-value": "id",
-                                    "hide-selected": "",
-                                    "return-object": "",
-                                  },
-                                  on: {
-                                    input: function ($event) {
-                                      return _vm.Printing(product.product)
-                                    },
-                                  },
-                                  model: {
-                                    value: product.product,
-                                    callback: function ($$v) {
-                                      _vm.$set(product, "product", $$v)
-                                    },
-                                    expression: "product.product",
-                                  },
-                                }),
-                                _vm._v(" "),
-                                _c(
-                                  "span",
-                                  {
+                      _vm._l(
+                        _vm.Transaction.products,
+                        function (product, index) {
+                          return _c(
+                            "v-row",
+                            {
+                              key: index,
+                              staticClass: "addProduct",
+                              attrs: { index: index },
+                            },
+                            [
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "4" } },
+                                [
+                                  _c("v-select", {
                                     directives: [
                                       {
-                                        name: "show",
-                                        rawName: "v-show",
-                                        value: _vm.errors.has("product"),
-                                        expression: "errors.has('product')",
+                                        name: "validate",
+                                        rawName: "v-validate",
+                                        value: "required",
+                                        expression: "'required'",
                                       },
                                     ],
-                                    staticClass: "validation-error",
-                                  },
-                                  [_vm._v(_vm._s(_vm.errors.first("product")))]
-                                ),
-                              ],
-                              1
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "v-col",
-                              { attrs: { cols: "2" } },
-                              [
-                                _c("v-text-field", {
-                                  directives: [
+                                    attrs: {
+                                      items: _vm.availableProductsList(index),
+                                      label: "product",
+                                      name: "name",
+                                      "item-text": "name",
+                                      "hide-selected": "",
+                                      "return-object": "",
+                                    },
+                                    model: {
+                                      value: product.product,
+                                      callback: function ($$v) {
+                                        _vm.$set(product, "product", $$v)
+                                      },
+                                      expression: "product.product",
+                                    },
+                                  }),
+                                  _vm._v(" "),
+                                  _c(
+                                    "span",
                                     {
-                                      name: "validate",
-                                      rawName: "v-validate",
-                                      value: "required|min_value:1 ",
-                                      expression: "`required|min_value:1 `",
-                                    },
-                                  ],
-                                  attrs: {
-                                    label: "quantity",
-                                    name: "quantity",
-                                    min: 0,
-                                    type: "number",
-                                  },
-                                  model: {
-                                    value: product.quantity,
-                                    callback: function ($$v) {
-                                      _vm.$set(product, "quantity", $$v)
-                                    },
-                                    expression: "product.quantity",
-                                  },
-                                }),
-                                _vm._v(" "),
-                                _c(
-                                  "div",
-                                  {
-                                    directives: [
-                                      {
-                                        name: "show",
-                                        rawName: "v-show",
-                                        value:
-                                          product.quantity == null ||
-                                          product.quantity == 0 ||
-                                          product.quantity >
-                                            _vm.getMaxQuantity(product),
-                                        expression:
-                                          "product.quantity == null || product.quantity == 0  || product.quantity > getMaxQuantity(product)",
-                                      },
-                                    ],
-                                    staticClass: "validation-error",
-                                  },
-                                  [_vm._v(_vm._s(_vm.errors.first("quantity")))]
-                                ),
-                              ],
-                              1
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "v-col",
-                              { attrs: { cols: "3" } },
-                              [
-                                _c("v-text-field", {
-                                  attrs: {
-                                    label: "total",
-                                    type: "text",
-                                    readonly: "",
-                                    value: _vm.productTotal(product) + " DA",
-                                  },
-                                }),
-                              ],
-                              1
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "v-col",
-                              {
-                                staticClass: "product-btns",
-                                attrs: { cols: "3" },
-                              },
-                              [
-                                _vm.selectedProducts.length >= 2
-                                  ? _c(
-                                      "v-btn",
-                                      {
-                                        attrs: {
-                                          color: "red",
-                                          dark: "",
-                                          small: "",
-                                          fab: "",
+                                      directives: [
+                                        {
+                                          name: "show",
+                                          rawName: "v-show",
+                                          value: _vm.errors.has("product"),
+                                          expression: "errors.has('product')",
                                         },
-                                        on: {
-                                          click: function ($event) {
-                                            return _vm.removeProduct(index)
-                                          },
-                                        },
-                                      },
-                                      [
-                                        _c("v-icon", { attrs: { small: "" } }, [
-                                          _vm._v("mdi-minus"),
-                                        ]),
                                       ],
-                                      1
-                                    )
-                                  : _vm._e(),
-                                _vm._v(" "),
-                                index === _vm.selectedProducts.length - 1 &&
-                                _vm.selectedProducts.length <
-                                  _vm.products.length
-                                  ? _c(
-                                      "v-btn",
+                                      staticClass: "validation-error",
+                                    },
+                                    [
+                                      _vm._v(
+                                        _vm._s(_vm.errors.first("product"))
+                                      ),
+                                    ]
+                                  ),
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "2" } },
+                                [
+                                  _c("v-text-field", {
+                                    directives: [
                                       {
-                                        attrs: {
-                                          color: "green",
-                                          dark: "",
-                                          small: "",
-                                          fab: "",
+                                        name: "validate",
+                                        rawName: "v-validate",
+                                        value:
+                                          "required|min_value:1|max_value:" +
+                                          _vm.maxQuantity(product.product),
+                                        expression:
+                                          "\n                  `required|min_value:1|max_value:${maxQuantity(\n                    product.product\n                  )}`\n                ",
+                                      },
+                                    ],
+                                    attrs: {
+                                      label: "quantity",
+                                      name: "quantity",
+                                      disabled: product.product == null,
+                                      min: 0,
+                                      type: "number",
+                                    },
+                                    model: {
+                                      value: product.quantity,
+                                      callback: function ($$v) {
+                                        _vm.$set(product, "quantity", $$v)
+                                      },
+                                      expression: "product.quantity",
+                                    },
+                                  }),
+                                  _vm._v(" "),
+                                  _c(
+                                    "span",
+                                    {
+                                      directives: [
+                                        {
+                                          name: "show",
+                                          rawName: "v-show",
+                                          value:
+                                            product.quantity == null ||
+                                            product.quantity == 0 ||
+                                            product.quantity >
+                                              product.product.quantity,
+                                          expression:
+                                            "\n                  product.quantity == null ||\n                  product.quantity == 0 ||\n                  product.quantity > product.product.quantity\n                ",
                                         },
-                                        on: {
-                                          click: function ($event) {
-                                            return _vm.addProduct()
+                                      ],
+                                      staticClass: "validation-error",
+                                    },
+                                    [
+                                      _vm._v(
+                                        "\n                " +
+                                          _vm._s(_vm.errors.first("quantity")) +
+                                          "\n              "
+                                      ),
+                                    ]
+                                  ),
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "3" } },
+                                [
+                                  _c("v-text-field", {
+                                    attrs: {
+                                      label: "total",
+                                      type: "text",
+                                      readonly: "",
+                                      value: _vm.productTotal(product) + " DA",
+                                    },
+                                  }),
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                {
+                                  staticClass: "product-btns",
+                                  attrs: { cols: "3" },
+                                },
+                                [
+                                  _vm.Transaction.products.length >= 2
+                                    ? _c(
+                                        "v-btn",
+                                        {
+                                          attrs: {
+                                            color: "red",
+                                            dark: "",
+                                            small: "",
+                                            fab: "",
+                                          },
+                                          on: {
+                                            click: function ($event) {
+                                              return _vm.removeProduct(index)
+                                            },
                                           },
                                         },
-                                      },
-                                      [_c("v-icon", [_vm._v("mdi-plus")])],
-                                      1
-                                    )
-                                  : _vm._e(),
-                              ],
-                              1
-                            ),
-                          ],
-                          1
-                        )
-                      }),
+                                        [_c("v-icon", [_vm._v("mdi-minus")])],
+                                        1
+                                      )
+                                    : _vm._e(),
+                                  _vm._v(" "),
+                                  index ===
+                                    _vm.Transaction.products.length - 1 &&
+                                  _vm.Transaction.products.length <
+                                    _vm.products.length
+                                    ? _c(
+                                        "v-btn",
+                                        {
+                                          attrs: {
+                                            color: "green",
+                                            dark: "",
+                                            small: "",
+                                            fab: "",
+                                          },
+                                          on: {
+                                            click: function ($event) {
+                                              return _vm.addProduct()
+                                            },
+                                          },
+                                        },
+                                        [_c("v-icon", [_vm._v("mdi-plus")])],
+                                        1
+                                      )
+                                    : _vm._e(),
+                                ],
+                                1
+                              ),
+                            ],
+                            1
+                          )
+                        }
+                      ),
                     ],
                     2
                   ),
@@ -24357,11 +24447,11 @@ var render = function () {
               _vm._v(" "),
               _c("v-card-actions", { staticClass: "Total-container" }, [
                 _c("h2", { staticClass: "pl-4" }, [
-                  _vm._v("total : "),
+                  _vm._v("\n          total : "),
                   _c("span", { staticClass: "bold" }, [
                     _vm._v(_vm._s(_vm.transactionTotal)),
                   ]),
-                  _vm._v(" DA"),
+                  _vm._v(" DA\n        "),
                 ]),
                 _vm._v(" "),
                 _c(
