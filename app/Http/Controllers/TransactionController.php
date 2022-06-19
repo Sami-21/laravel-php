@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TransactionRequest;
 use App\Transaction;
 use App\Product;
-
+use Illuminate\Auth\Events\Validated;
 
 class TransactionController extends Controller
 {
@@ -19,13 +19,16 @@ class TransactionController extends Controller
 
         $validated = $request->validated();
         $transaction = Transaction::create($validated);
-        foreach ($request->products as $product) {
+        foreach ($validated['products'] as $product) {
+
             $transaction->products()->attach(
+
+                $product['product_id'],
                 [
-                    $product['product']['id'],
-                    ['quantity' => $product['quantity']],
-                    ['price' => $product['product']['price']],
+                    'price' => $product['price'],
+                    'quantity' => $product['quantity']
                 ]
+
             );
         }
     }

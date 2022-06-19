@@ -176,42 +176,36 @@ export default {
   }),
 
   mounted() {
+    this.getClients();
 
-  this.getClients();
+    this.getProviders();
 
-  this.getProviders();
-
-  this.getProducts();
-
+    this.getProducts();
   },
 
   computed: {
-    
     availableProducts() {
       return this.products.filter((product) => {
-        
-        let SelectedProducts = this.Transaction.products
-            .map((el) => {
-              if (el.product) {
-                return el.product;
-              }
-            });
+        let SelectedProducts = this.Transaction.products.map((el) => {
+          if (el.product) {
+            return el.product;
+          }
+        });
 
-        return !(SelectedProducts.includes(product))
+        return !SelectedProducts.includes(product);
       });
     },
 
     transactionTotal() {
-      
       this.Transaction.total = parseFloat(
-        this.Transaction.products
-          .reduce((total, product) => {
-            if (product.product) { // is not null 
-              return (total += product.product.price * product.quantity);
-            } else {
-              return 0;
-            }
-          }, 0)
+        this.Transaction.products.reduce((total, product) => {
+          if (product.product) {
+            // is not null
+            return (total += product.product.price * product.quantity);
+          } else {
+            return 0;
+          }
+        }, 0)
       ).toFixed(2);
 
       return this.Transaction.total;
@@ -219,61 +213,56 @@ export default {
   },
 
   methods: {
-  async  getClients(){
-        // Getting All Clients
+    async getClients() {
+      // Getting All Clients
 
-    new Promise((resolve, reject) => {
-      axios
-        .get("/clients")
-        .then((res) => {
-          this.clients = res.data;
-          resolve(res);
-        })
-        .catch((err) => {
-          console.log(err.response);
-          reject(err);
-        });
-    });
+      new Promise((resolve, reject) => {
+        axios
+          .get("/clients")
+          .then((res) => {
+            this.clients = res.data;
+            resolve(res);
+          })
+          .catch((err) => {
+            console.log(err.response);
+            reject(err);
+          });
+      });
     },
 
-  async  getProviders(){
-    // Getting All Providers
+    async getProviders() {
+      // Getting All Providers
 
-    new Promise((resolve, reject) => {
-      axios
-        .get("/providers")
-        .then((res) => {
-          this.providers = res.data;
-          resolve(res);
-        })
-        .catch((err) => {
-          console.log(err.response);
-          reject(err);
-        });
-    });
-  },
+      new Promise((resolve, reject) => {
+        axios
+          .get("/providers")
+          .then((res) => {
+            this.providers = res.data;
+            resolve(res);
+          })
+          .catch((err) => {
+            console.log(err.response);
+            reject(err);
+          });
+      });
+    },
 
-  async  getProducts(){
-    // Getting All Products
+    async getProducts() {
+      // Getting All Products
 
-    new Promise((resolve, reject) => {
-      axios
-        .get("/products")
-        .then((res) => {
-          this.products = res.data;
-          resolve(res);
-        })
-        .catch((err) => {
-          console.log(err.response);
-          reject(err);
-        });
-    });
-  },
-
-
-
-
-
+      new Promise((resolve, reject) => {
+        axios
+          .get("/products")
+          .then((res) => {
+            this.products = res.data;
+            resolve(res);
+          })
+          .catch((err) => {
+            console.log(err.response);
+            reject(err);
+          });
+      });
+    },
 
     availableProductsList(index) {
       return [
@@ -285,7 +274,7 @@ export default {
     maxQuantity(product) {
       if (product) {
         return product.quantity;
-      } 
+      }
     },
 
     productTotal(product) {
@@ -309,19 +298,35 @@ export default {
     },
 
     removeProduct(index) {
-
       this.Transaction.products.splice(index, 1);
-
     },
 
     async save() {
+      let products = [];
+      this.Transaction.products.forEach((product) => {
+        products.push({
+          product_id: product.product.id,
+          price: parseFloat(product.product.price),
+          quantity: product.quantity,
+        });
+      });
 
       this.$validator.validateAll().then((result) => {
         if (result) {
-          console.log(this.Transaction);
+          console.log(
+            this.Transaction.client_id,
+            this.Transaction.provider_id,
+            this.Transaction.total,
+            products
+          );
           new Promise((resolve, reject) => {
             axios
-              .post("/transactions", this.Transaction)
+              .post("/transactions", {
+                client_id: this.Transaction.client_id,
+                provider_id: this.Transaction.provider_id,
+                total: this.Transaction.total,
+                products: products,
+              })
               .then((res) => {
                 console.log("data", res);
                 resolve(res);
@@ -332,16 +337,13 @@ export default {
               });
           });
         }
-        
       });
     },
-
   },
 };
 </script>
 
 <style scoped>
-
 .addProduct {
   align-items: center;
 }

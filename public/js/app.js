@@ -4588,7 +4588,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     transactionTotal: function transactionTotal() {
       this.Transaction.total = parseFloat(this.Transaction.products.reduce(function (total, product) {
         if (product.product) {
-          // is not null 
+          // is not null
           return total += product.product.price * product.quantity;
         } else {
           return 0;
@@ -4711,15 +4711,31 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       var _this5 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee4() {
+        var products;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
+                products = [];
+
+                _this5.Transaction.products.forEach(function (product) {
+                  products.push({
+                    product_id: product.product.id,
+                    price: parseFloat(product.product.price),
+                    quantity: product.quantity
+                  });
+                });
+
                 _this5.$validator.validateAll().then(function (result) {
                   if (result) {
-                    console.log(_this5.Transaction);
+                    console.log(_this5.Transaction.client_id, _this5.Transaction.provider_id, _this5.Transaction.total, products);
                     new Promise(function (resolve, reject) {
-                      axios__WEBPACK_IMPORTED_MODULE_1___default().post("/transactions", _this5.Transaction).then(function (res) {
+                      axios__WEBPACK_IMPORTED_MODULE_1___default().post("/transactions", {
+                        client_id: _this5.Transaction.client_id,
+                        provider_id: _this5.Transaction.provider_id,
+                        total: _this5.Transaction.total,
+                        products: products
+                      }).then(function (res) {
                         console.log("data", res);
                         resolve(res);
                       })["catch"](function (err) {
@@ -4730,7 +4746,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   }
                 });
 
-              case 1:
+              case 3:
               case "end":
                 return _context4.stop();
             }

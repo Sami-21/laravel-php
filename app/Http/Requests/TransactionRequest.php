@@ -27,6 +27,7 @@ class TransactionRequest extends FormRequest
             'client_id' => 'required',
             'provider_id' => 'required',
             'total' => 'required',
+            'products' => 'required'
         ];
     }
 }
