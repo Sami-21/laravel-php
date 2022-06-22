@@ -45,6 +45,6 @@ Route::get('transactions', "TransactionController@getTransactions");
 
 Route::post('transactions', "TransactionController@addTransaction");
 
-// Route::put('transactions/{id}', "TransactionController@updateTransaction");
+Route::put('transactions/{id}', "TransactionController@updateTransaction");
 
-// Route::delete('transactions/{id}', "TransactionController@deleteTransaction");
+Route::delete('transactions/{id}', "TransactionController@deleteTransaction");

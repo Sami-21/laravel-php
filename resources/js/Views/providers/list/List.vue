@@ -26,7 +26,7 @@
         </v-dialog>
         <v-dialog v-model="AddSuccess" max-width="500px">
           <v-card>
-            <v-card-title class="text-h5">Client Added Successfully</v-card-title>
+            <v-card-title class="text-h5">Provider Added Successfully</v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="primary" text @click="AddSuccess=false">OK</v-btn>
@@ -36,7 +36,7 @@
         </v-dialog>
         <v-dialog v-model="EditSuccess" max-width="500px">
           <v-card>
-            <v-card-title class="text-h5">Client Edited Successfully</v-card-title>
+            <v-card-title class="text-h5">Provider Edited Successfully</v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="primary" text @click="EditSuccess=false">OK</v-btn>
@@ -46,7 +46,7 @@
         </v-dialog>
         <v-dialog v-model="DeleteSuccess" max-width="500px">
           <v-card>
-            <v-card-title class="text-h5">Client Deleted Successfully</v-card-title>
+            <v-card-title class="text-h5">Provider Deleted Successfully</v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="primary" text @click="DeleteSuccess=false">OK</v-btn>

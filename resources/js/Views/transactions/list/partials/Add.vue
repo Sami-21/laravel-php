@@ -5,7 +5,7 @@
         <v-icon large>mdi-plus</v-icon>
       </v-btn>
     </template>
-    <v-form @submit.prevent="save" id="addTransactionForm">
+    <v-form @submit.prevent="saveTransaction" id="addTransactionForm">
       <v-card>
         <v-card-title>
           <span class="text-h5">New Transaction</span>
@@ -73,7 +73,7 @@
                   v-model="product.quantity"
                   label="quantity"
                   name="quantity"
-                  :disabled="product.product == null"
+                  :disabled="product.product === null"
                   :min="0"
                   v-validate="
                     `required|min_value:1|max_value:${maxQuantity(
@@ -139,7 +139,9 @@
             total : <span class="bold">{{ transactionTotal }}</span> DA
           </h2>
           <div>
-            <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
+            <v-btn color="blue darken-1" text @click="closeDialog"
+              >Cancel</v-btn
+            >
             <v-btn
               type="submit"
               color="green darken-1"
@@ -197,18 +199,20 @@ export default {
     },
 
     transactionTotal() {
-      this.Transaction.total = parseFloat(
-        this.Transaction.products.reduce((total, product) => {
-          if (product.product) {
-            // is not null
-            return (total += product.product.price * product.quantity);
-          } else {
-            return 0;
-          }
-        }, 0)
-      ).toFixed(2);
+      if (this.Transaction.products) {
+        this.Transaction.total = parseFloat(
+          this.Transaction.products.reduce((total, product) => {
+            if (product.product) {
+              // is not null
+              return (total += product.product.price * product.quantity);
+            } else {
+              return 0;
+            }
+          }, 0)
+        ).toFixed(2);
 
-      return this.Transaction.total;
+        return this.Transaction.total;
+      } else return 0;
     },
   },
 
@@ -216,7 +220,7 @@ export default {
     async getClients() {
       // Getting All Clients
 
-      new Promise((resolve, reject) => {
+      return new Promise((resolve, reject) => {
         axios
           .get("/clients")
           .then((res) => {
@@ -233,7 +237,7 @@ export default {
     async getProviders() {
       // Getting All Providers
 
-      new Promise((resolve, reject) => {
+      return new Promise((resolve, reject) => {
         axios
           .get("/providers")
           .then((res) => {
@@ -250,7 +254,7 @@ export default {
     async getProducts() {
       // Getting All Products
 
-      new Promise((resolve, reject) => {
+      return new Promise((resolve, reject) => {
         axios
           .get("/products")
           .then((res) => {
@@ -286,7 +290,7 @@ export default {
       }
     },
 
-    close() {
+    closeDialog() {
       this.dialogAdd = false;
     },
 
@@ -301,24 +305,18 @@ export default {
       this.Transaction.products.splice(index, 1);
     },
 
-    async save() {
-      let products = [];
-      this.Transaction.products.forEach((product) => {
-        products.push({
-          product_id: product.product.id,
-          price: parseFloat(product.product.price),
-          quantity: product.quantity,
-        });
-      });
-
+    async saveTransaction() {
       this.$validator.validateAll().then((result) => {
         if (result) {
-          console.log(
-            this.Transaction.client_id,
-            this.Transaction.provider_id,
-            this.Transaction.total,
-            products
-          );
+          let products = [];
+          this.Transaction.products.forEach((product) => {
+            products.push({
+              product_id: product.product.id,
+              price: parseFloat(product.product.price),
+              quantity: product.quantity,
+            });
+          });
+
           new Promise((resolve, reject) => {
             axios
               .post("/transactions", {
@@ -329,6 +327,9 @@ export default {
               })
               .then((res) => {
                 console.log("data", res);
+                this.closeDialog();
+                this.Transaction = {};
+                this.$bus.emit("add", this.Transaction);
                 resolve(res);
               })
               .catch((err) => {
