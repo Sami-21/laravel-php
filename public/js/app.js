@@ -5302,9 +5302,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
+                console.log(_this6.transaction);
+
                 _this6.$validator.validateAll().then(function (result) {
                   if (result) {
-                    console.log(_this6.transaction);
                     var newProducts = [];
 
                     _this6.transaction.products.forEach(function (product) {
@@ -5316,13 +5317,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                     });
 
                     new Promise(function (resolve, reject) {
-                      axios__WEBPACK_IMPORTED_MODULE_1___default().put("/transactions", {
+                      axios__WEBPACK_IMPORTED_MODULE_1___default().put("/transactions/".concat(_this6.current.id), {
                         client_id: _this6.transaction.client_id,
                         provider_id: _this6.transaction.provider_id,
                         total: _this6.transaction.total,
                         products: newProducts
                       }).then(function (res) {
-                        _this6.closeDialog();
+                        _this6.close();
 
                         _this6.transaction = {};
 
@@ -5337,7 +5338,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   }
                 });
 
-              case 1:
+              case 2:
               case "end":
                 return _context4.stop();
             }

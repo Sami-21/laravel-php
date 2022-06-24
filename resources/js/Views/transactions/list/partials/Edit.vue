@@ -309,9 +309,9 @@ export default {
     },
 
     async saveTransaction() {
+      console.log(this.transaction);
       this.$validator.validateAll().then((result) => {
         if (result) {
-          console.log(this.transaction);
           let newProducts = [];
           this.transaction.products.forEach((product) => {
             newProducts.push({
@@ -320,17 +320,16 @@ export default {
               quantity: product.quantity,
             });
           });
-
           new Promise((resolve, reject) => {
             axios
-              .put("/transactions", {
+              .put(`/transactions/${this.current.id}`, {
                 client_id: this.transaction.client_id,
                 provider_id: this.transaction.provider_id,
                 total: this.transaction.total,
                 products: newProducts,
               })
               .then((res) => {
-                this.closeDialog();
+                this.close();
                 this.transaction = {};
                 this.$bus.emit("edit", this.transaction);
                 resolve(res);
