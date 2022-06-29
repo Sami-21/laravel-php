@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="dialogEdit" max-width="600px">
-    <v-form @submit.prevent="saveTransaction" id="addtransactionForm">
+    <v-form @submit.prevent="saveTransaction" id="editTransactionForm">
       <v-card>
         <v-card-title>
           <span class="text-h5">Edit Transaction</span>
@@ -42,7 +42,7 @@
             </v-row>
 
             <v-row
-              class="addProduct"
+              class="Product"
               v-for="(product, index) in transaction.products"
               :index="index"
               :key="index"
@@ -83,7 +83,7 @@
                   v-show="
                     product.quantity == null ||
                     product.quantity == 0 ||
-                    product.quantity > product.product.maxQuantity
+                    product.quantity > product.product.quantity
                   "
                 >
                   {{ errors.first("quantity") }}
@@ -139,7 +139,7 @@
               type="submit"
               color="green darken-1"
               text
-              form="addtransactionForm"
+              form="editTransactionForm"
               >Save</v-btn
             >
           </div>
@@ -215,7 +215,7 @@ export default {
             id: product.id,
             name: product.name,
             price: product.price,
-            maxQuantity: product.quantity,
+            quantity: product.quantity,
           },
           quantity: product.pivot.quantity,
         });
@@ -275,7 +275,7 @@ export default {
 
     productMaxQuantity(product) {
       if (product) {
-        return product.maxQuantity;
+        return product.quantity;
       } else {
         return 0;
       }
@@ -309,17 +309,17 @@ export default {
     },
 
     async saveTransaction() {
-      console.log(this.transaction);
       this.$validator.validateAll().then((result) => {
         if (result) {
           let newProducts = [];
           this.transaction.products.forEach((product) => {
             newProducts.push({
-              product_id: product.id,
-              price: parseFloat(product.price),
+              product_id: product.product.id,
+              price: parseFloat(product.product.price),
               quantity: product.quantity,
             });
           });
+
           new Promise((resolve, reject) => {
             axios
               .put(`/transactions/${this.current.id}`, {
@@ -347,7 +347,7 @@ export default {
 </script>
 
 <style scoped>
-.addProduct {
+.Product {
   align-items: center;
 }
 

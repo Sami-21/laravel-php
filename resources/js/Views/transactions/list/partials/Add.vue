@@ -328,7 +328,17 @@ export default {
               .then((res) => {
                 console.log("data", res);
                 this.closeDialog();
-                this.Transaction = {};
+                this.Transaction = {
+                  client_id: null,
+                  provider_id: null,
+                  total: 0,
+                  products: [
+                    {
+                      product: null,
+                      quantity: 0,
+                    },
+                  ],
+                };
                 this.$bus.emit("add", this.Transaction);
                 resolve(res);
               })

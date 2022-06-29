@@ -1,5 +1,5 @@
 
-import Home from '../Views/Home.vue'
+import Dashboard from '../Views/Dashboard.vue'
 import Client from '../Views/clients/Index.vue'
 import Provider from '../Views/providers/Index.vue'
 import Product from '../Views/products/Index.vue'
@@ -8,7 +8,7 @@ import Transaction from '../Views/transactions/Index.vue'
 const routes = [
     {
         path :'/',
-        component :Home
+        component :Dashboard
        },
        {
         path :'/clients',

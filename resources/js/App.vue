@@ -1,7 +1,12 @@
 <template>
   <v-app>
     <v-card>
-      <v-navigation-drawer v-model="drawer" :mini-variant.sync="mini" permanent fixed>
+      <v-navigation-drawer
+        v-model="drawer"
+        :mini-variant.sync="mini"
+        permanent
+        fixed
+      >
         <v-list-item class="px-2">
           <v-list-item-avatar>
             <v-img src="./"></v-img>
@@ -17,7 +22,12 @@
         <v-divider></v-divider>
 
         <v-list dense>
-          <v-list-item v-for="item in items" :key="item.title" link :to="item.path">
+          <v-list-item
+            v-for="item in items"
+            :key="item.title"
+            link
+            :to="item.path"
+          >
             <v-list-item-icon>
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-icon>
@@ -40,22 +50,23 @@ export default {
     return {
       drawer: true,
       items: [
+        { title: "Dashboard", icon: "mdi-view-dashboard", path: "/" },
         { title: "Clients", icon: "mdi-account-group", path: "/clients" },
         { title: "Providers", icon: "mdi-account-wrench", path: "/providers" },
         {
           title: "Products",
           icon: "mdi-package-variant-closed",
-          path: "/products"
+          path: "/products",
         },
         {
           title: "Transactions",
           icon: "mdi-cash-multiple",
-          path: "/transactions"
-        }
+          path: "/transactions",
+        },
       ],
-      mini: true
+      mini: true,
     };
-  }
+  },
 };
 </script>
 <style>
