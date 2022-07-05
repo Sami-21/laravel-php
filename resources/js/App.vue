@@ -51,7 +51,7 @@ export default {
       drawer: true,
       items: [
         { title: "Dashboard", icon: "mdi-view-dashboard", path: "/" },
-        { title: "Clients", icon: "mdi-account-group", path: "/clients" },
+        { title: "Clients",   icon: "mdi-account-group", path: "/clients" },
         { title: "Providers", icon: "mdi-account-wrench", path: "/providers" },
         {
           title: "Products",

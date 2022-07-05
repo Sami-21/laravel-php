@@ -29,4 +29,9 @@ class ClientController extends Controller
     {
         Client::find($id)->delete();
     }
+
+    function count(){
+        $clients = Client::all();
+        return count($clients);
+    }
 }

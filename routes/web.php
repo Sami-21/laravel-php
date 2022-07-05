@@ -48,3 +48,13 @@ Route::post('transactions', "TransactionController@addTransaction");
 Route::put('transactions/{id}', "TransactionController@updateTransaction");
 
 Route::delete('transactions/{id}', "TransactionController@deleteTransaction");
+
+// Dashboard Routes
+
+Route::get('dashboard', "DashboardController@getCounts");
+
+// Route::post('transactions', "TransactionController@addTransaction");
+
+// Route::put('transactions/{id}', "TransactionController@updateTransaction");
+
+// Route::delete('transactions/{id}', "TransactionController@deleteTransaction");
